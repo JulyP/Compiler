@@ -1,0 +1,152 @@
+int TableOfTokensToSeqOfRules (int i)
+{
+	if (i >= 0)
+	//нет ошибки
+	{
+		if (i == 0)
+		//выброс
+		{
+			
+			DelNodeFromStack();		//удаляем из стека вершину
+			//увеличиваем счетчик токенов входной цепочки, то есть будем считывать следующую вершину
+			numOfTokenOfChain++;
+
+		}
+		//правила из грамматики
+		else
+		{
+			//добавляем в цепочку правил правило
+			AddNodeToSeqOfRules(i,t[numOfTokenOfChain].numToken);
+			switsh(i)
+			{
+			case 101:
+				{
+					//меняем Prog на main Block
+					DelNodeFromStack();		//удаляем из стека вершину Prog
+					AddNodeToStack(0);		//добавляем в стек вершину main
+					AddNodeToStack(24);		//добавляем в стек вершину Block
+					break;
+				}
+			case 102:
+				{
+					//меняем Block на { Sent }
+					DelNodeFromStack();		//удаляем из стека вершину Block
+					AddNodeToStack(1);		//добавляем в стек вершину {
+					AddNodeToStack(25);		//добавляем в стек вершину Sent
+					AddNodeToStack(2);		//добавляем в стек вершину }
+					break;
+				}
+			case 103:
+				{
+					//меняем Sent на DescrVar Sent
+					DelNodeFromStack();		//удаляем из стека вершину Sent
+					AddNodeToStack(26);		//добавляем в стек вершину DescrVar
+					AddNodeToStack(25);		//добавляем в стек вершину Sent
+					break;
+				}
+			case 104:
+				{
+					//меняем Sent на OpEqu Sent
+					DelNodeFromStack();		//удаляем из стека вершину Sent
+					AddNodeToStack(27);		//добавляем в стек вершину OpEqu
+					AddNodeToStack(25);		//добавляем в стек вершину Sent
+					break;
+				}
+			case 105:
+				{
+					//меняем Sent на OpIn Sent
+					DelNodeFromStack();		//удаляем из стека вершину Sent
+					AddNodeToStack(28);		//добавляем в стек вершину OpIn
+					AddNodeToStack(25);		//добавляем в стек вершину Sent
+					break;
+				}
+			case 106:
+				{
+					//меняем Sent на OpOut Sent
+					DelNodeFromStack();		//удаляем из стека вершину Sent
+					AddNodeToStack(29);		//добавляем в стек вершину OpOut
+					AddNodeToStack(25);		//добавляем в стек вершину Sent
+					break;
+				}
+			case 107:
+				{
+					//меняем Sent на OpIf Sent
+					DelNodeFromStack();		//удаляем из стека вершину Sent
+					AddNodeToStack(30);		//добавляем в стек вершину OpIf
+					AddNodeToStack(25);		//добавляем в стек вершину Sent
+					break;
+				}
+			case 108:
+				{
+					//меняем Sent на OpFor Sent
+					DelNodeFromStack();		//удаляем из стека вершину Sent
+					AddNodeToStack(31);		//добавляем в стек вершину OpFor
+					AddNodeToStack(25);		//добавляем в стек вершину Sent
+					break;
+				}
+			case 109:
+				{
+					//меняем Sent на OpWhile Sent
+					DelNodeFromStack();		//удаляем из стека вершину Sent
+					AddNodeToStack(32);		//добавляем в стек вершину OpWhile
+					AddNodeToStack(25);		//добавляем в стек вершину Sent
+					break;
+				}
+			case 110:
+				{
+					//меняем Sent на пустой символ
+					DelNodeFromStack();		//удаляем из стека вершину Sent
+					break;
+				}
+			case 111:
+				{
+					//меняем DescrVar на type id EquExpr
+					DelNodeFromStack();		//удаляем из стека вершину DescrVar
+					AddNodeToStack(5);		//добавляем в стек вершину type
+					AddNodeToStack(3);		//добавляем в стек вершину id
+					AddNodeToStack(33);		//добавляем в стек вершину EquExpr
+					break;
+				}
+			case 112:
+			case 113:
+			case 114:
+			case 115:
+			case 116:
+			case 117:
+			case 118:
+			case 119:
+			case 120:
+			case 121:
+			case 122:
+			case 123:
+			case 124:
+			case 125:
+			case 126:
+			case 127:
+			case 128:
+			case 129:
+			case 130:
+			case 131:
+			case 132:
+			case 133:
+			case 134:
+			case 135:
+			case 136:
+			case 137:
+			case 138:
+			case 139:
+			case 140:
+			case 141:
+			}
+		}
+		//продолжаем зарбор		
+		TableOfTokesToSeqOfRules(Tab[t[numOfTokenOfChain].token][NumFromStack()]);
+		return 0;
+	}
+	//ошибка
+	else
+	{
+		Error(i);
+	}
+
+}
