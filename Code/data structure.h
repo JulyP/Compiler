@@ -1,6 +1,13 @@
 #ifndef DATA_STRUCTURE_H_INCLUDED
 #define DATA_STRUCTURE_H_INCLUDED
 
+// КОНТЕКСТНЫЕ ОГРАНИЧЕНИЯ
+const int max_amount_id = 250;		//максимальное количество идентификаторов
+const int max_amount_skobka = 10;		//максимальная вложенность скобок
+const int max_level_blocks = 8;		//максимальная вложенность блоков
+const int max_amount_print = 5;		//максимальное количество выражений в операторе вывода
+const int max_amount_podblocs = 20;	//максимальное количество вложенных подблоков первого уровня в один блок
+
 //ОБЩИЕ ОШИБКИ
 struct error			        //узел стека, в котором хранятся ошибки
 {
