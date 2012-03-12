@@ -1,7 +1,7 @@
 #ifndef PARSER_H_INCLUDED
 #define PARSER_H_INCLUDED
 
-    // DATA
+// ***DATA***
 int Tab[47][24];				    //таблица, в ячейках которой хранятся номера ошибок и номера правил,
                                     //числа обозначающие выброс и допуск, таблица разбора
 struct nodeToStack	                //узел стека
@@ -19,8 +19,9 @@ struct nodeToStack *HeadOfStack;    //Стек для разбора (используется во время по
 
 int numOfTokenOfChain;			    //номер текущего токена
 
-    // FUNC
-                                    //удаляем из стека вершину
+
+// ***FUNC***
+//удаляет из стека вершину
 int DelNodeFromStack(struct nodeToStack **p)
 {
     struct nodeToStack *p1 = (*p);
@@ -29,7 +30,7 @@ int DelNodeFromStack(struct nodeToStack **p)
     return 0;
 }
 
-                                    //удаляем лексему из потока лексем
+//удаляет лексему из потока лексем
 int DelToken(struct node **p)
 {
     struct node *p1 = (*p);
@@ -38,13 +39,14 @@ int DelToken(struct node **p)
     return 0;
 }
 
-int NumFromStack(struct node **p)   //возвращает число, которое находится в верхушке стека (потока лексем)
+//возвращает число, которое находится в верхушке стека (потока лексем)
+int NumFromStack(struct node **p)
 {
     return (*p) -> n.numToken;
 }
 
-                                    //добавляет в посл-ть (в конец посл-ти) правил номер правила, атр.токена
-int AddNodeToSeqOfRules(struct nodeToStack **HeadSeqOfRule, int rule, int token, int numToken, int position, int numString, int value)
+//добавляет в посл-ть (в конец посл-ти) правил номер правила, атр.токена
+int AddNodeToSeqOfRules(struct nodeToStack **pp, int rule, int token, int numToken, int position, int numString, int value)
 {
     struct nodeToStack *p1, *p = (struct nodeToStack*)malloc(sizeof(struct nodeToStack));
     p -> numOfRule = rule;
@@ -54,7 +56,7 @@ int AddNodeToSeqOfRules(struct nodeToStack **HeadSeqOfRule, int rule, int token,
     p -> position = position;
     p -> numString = numString;
     p -> value = value;
-    p1 = (*HeadSeqOfRule);
+    p1 = (*pp);
     if (p1 != NULL)
     {
         while (p1->next != NULL)
@@ -65,66 +67,56 @@ int AddNodeToSeqOfRules(struct nodeToStack **HeadSeqOfRule, int rule, int token,
     }
     else
     {
-        *HeadSeqOfRule = p;
+        *pp = p;
     }
     return 0;
 }
 
-                                    //добавляет в стек номер нетерминала или лексемы
-int AddNodeToStack (struct nodeToStack **HeadOfStack, int N_or_t)
+//добавляет в стек номер нетерминала или лексемы
+int AddNodeToStack (struct nodeToStack **pp, int N_or_t)
 {
     struct nodeToStack *p = (struct nodeToStack*)malloc(sizeof(struct nodeToStack));
     p -> numOfRule = 0;
     p -> token = N_or_t;
-    p -> next = (*HeadOfStack);
-    (*HeadOfStack) = p;
-
-/*    if (p1 != NULL)
-    {
-        while (p1 -> next != NULL)
-        {
-            p1 = p1 -> next;
-        }
-        p1 -> next = p;
-    }
-    else
-    {
-        (*HeadOfStack) = p;
-    }
-*/
+    p -> next = (*pp);
+    (*pp) = p;
     return 0;
 }
 
-                                    //добавляем в дерево узел
-struct nodeTree *addNodeToTree(struct nodeTree **p, int i, int j)
+//добавляем в дерево узел
+struct nodeTree *addNodeToTree(struct nodeTree **p, struct nodeToStack *p1, int neterminal, int j)
 {
-	struct nodeTree *p1 = (struct nodeTree*)malloc(sizeof(struct nodeTree));
+	struct nodeTree *p2 = (struct nodeTree*)malloc(sizeof(struct nodeTree));
 	int k = 0;
 	for (k = 0; k < 4; k++)
 	{
-		p1 -> alpha[k] = NULL;
+		p2 -> alpha[k] = NULL;
 	}
-	p1 -> token = i;
-	if (i == 23)
+	p2 -> token = neterminal;                   //номер лексемы (0 - 22), (23 - 46)
+	p2 -> numToken = p1 -> numToken;            //номер атрибута (от 1 до 39)
+	p2 -> value = p1 -> value;                  //номер в таблице имен или констант
+	p2 -> numString = p1 -> numString;          //номер строки
+	p2 -> position = p1 -> position;            //позиция в строке(в буфере)
+	if (neterminal == 23)
 	{
-		*p = p1;
+		(*p) = p2;
 	}
 	else
 	{
-		(*p) -> alpha[j] = p1;
+	    if (j == 0)
+	    {
+	        (*p) -> alpha[j] = p2;
+	    }
+	    else
+	    {
+            (*p) -> alpha[j-1] = p2;
+	    }
 	}
-	return p1;
+	return p2;
 }
 
-void printTree()                    //печать синтаксического дерева
-{
-	printf("%d\n",Root->token);
-	printf("%d\n",Root->alpha[1]->token);
-	printf("%d\n",Root->alpha[2]->token);
-	printf("%d\n",Root->alpha[2]->alpha[2]->token);
-}
-
-int Table()                         //заполняет таблицу разбора
+//заполняет таблицу разбора
+int Table()
 {
     int i = 0;
 	for (i = 0; i < 24; i++)
@@ -227,7 +219,7 @@ int Table()                         //заполняет таблицу разбора
 	Tab[38][9] = 123;
 	Tab[38][11] = 123;
 	Tab[38][13] = 123;
-	Tab[38][15] = 103;//?????????????????
+	Tab[38][15] = 103;//??????
 	Tab[38][16] = 122;
 	Tab[38][17] = 123;
 	Tab[38][18] = 123;
@@ -266,7 +258,7 @@ int Table()                         //заполняет таблицу разбора
 	return 0;
 }
 
-                                    //по потоку лексем строит цепочку правил
+//по потоку лексем строит цепочку правил
 int TableOfTokensToSeqOfRules (int i)
 {
 	if (i >= 0)
@@ -517,20 +509,123 @@ int TableOfTokensToSeqOfRules (int i)
                     break;
                 }
                 case 127:
+                {
+                    // SecDCE -> compop DiffCondExpr  SecDCE
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину SecDCE
+                    AddNodeToStack(&HeadOfStack, 40);		//добавляем в стек вершину SecDCE
+                    AddNodeToStack(&HeadOfStack, 39);		//добавляем в стек вершину DiffCondExpr
+                    AddNodeToStack(&HeadOfStack, 19);		//добавляем в стек вершину compop
+                    break;
+                }
                 case 128:
+                {
+                    // SecDCE -> Л
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину SecDCE
+                    break;
+                }
                 case 129:
+                {
+                    // DiffCondExpr -> (CondExpr)
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину DiffCondExpr
+                    AddNodeToStack(&HeadOfStack, 15);		//добавляем в стек вершину )
+                    AddNodeToStack(&HeadOfStack, 37);		//добавляем в стек вершину CondExpr
+                    AddNodeToStack(&HeadOfStack, 14);		//добавляем в стек вершину (
+                    break;
+                }
                 case 130:
+                {
+                    // DiffCondExpr -> SimpCondExpr
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину DiffCondExpr
+                    AddNodeToStack(&HeadOfStack, 41);		//добавляем в стек вершину SimpCondExpr
+                    break;
+                }
                 case 131:
+                {
+                    // SimpCondExpr -> id relop ArExpr
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину SimpCondExpr
+                    AddNodeToStack(&HeadOfStack, 35);		//добавляем в стек вершину ArExpr
+                    AddNodeToStack(&HeadOfStack, 20);		//добавляем в стек вершину relop
+                    AddNodeToStack(&HeadOfStack, 3);		//добавляем в стек вершину id
+                    break;
+                }
                 case 132:
+                {
+                    // SimpCondExpr -> constnum relop ArExpr
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину SimpCondExpr
+                    AddNodeToStack(&HeadOfStack, 35);		//добавляем в стек вершину ArExpr
+                    AddNodeToStack(&HeadOfStack, 20);		//добавляем в стек вершину relop
+                    AddNodeToStack(&HeadOfStack, 7);		//добавляем в стек вершину constnum
+                    break;
+                }
                 case 133:
+                {
+                    // ArExpr -> Addendum SecAddendum
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину ArExpr
+                    AddNodeToStack(&HeadOfStack, 43);		//добавляем в стек вершину SecAddendum
+                    AddNodeToStack(&HeadOfStack, 42);		//добавляем в стек вершину Addendum
+                    break;
+                }
                 case 134:
+                {
+                    // SecAddendum -> addop Addendum SecAddendum
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину SecAddendum
+                    AddNodeToStack(&HeadOfStack, 43);		//добавляем в стек вершину SecAddendum
+                    AddNodeToStack(&HeadOfStack, 42);		//добавляем в стек вершину Addendum
+                    AddNodeToStack(&HeadOfStack, 21);		//добавляем в стек вершину addop
+                    break;
+                }
                 case 135:
+                {
+                    // SecAddendum -> Л
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину SecAddendum
+                    break;
+                }
                 case 136:
+                {
+                    // Addendum -> Multiplier SecMultiplier
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину Addendum
+                    AddNodeToStack(&HeadOfStack, 45);		//добавляем в стек вершину SecMultiplier
+                    AddNodeToStack(&HeadOfStack, 44);		//добавляем в стек вершину Multiplier
+                    break;
+                }
                 case 137:
+                {
+                    // SecMultiplier -> multop Multiplier SecMultiplier
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину SecMultiplier
+                    AddNodeToStack(&HeadOfStack, 45);		//добавляем в стек вершину SecMultiplier
+                    AddNodeToStack(&HeadOfStack, 44);		//добавляем в стек вершину Multiplier
+                    AddNodeToStack(&HeadOfStack, 22);		//добавляем в стек вершину multop
+                    break;
+                }
                 case 138:
+                {
+                    // SecMultiplier -> Л
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину SecMultiplier
+                    break;
+                }
                 case 139:
+                {
+                    // Multiplier -> ( ArExpr)
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину Multiplier
+                    AddNodeToStack(&HeadOfStack, 15);		//добавляем в стек вершину )
+                    AddNodeToStack(&HeadOfStack, 35);		//добавляем в стек вершину ArExpr
+                    AddNodeToStack(&HeadOfStack, 14);		//добавляем в стек вершину (
+                    break;
+                }
                 case 140:
+                {
+                    // Multiplier -> constnum
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину Multiplier
+                    AddNodeToStack(&HeadOfStack, 7);		//добавляем в стек вершину constnum
+                    break;
+                }
                 case 141:
+                {
+                    // Multiplier -> id
+                    DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину Multiplier
+                    AddNodeToStack(&HeadOfStack, 3);		//добавляем в стек вершину id
+                    break;
+                }
 			}
 		}
 		//продолжаем разбор
@@ -545,20 +640,369 @@ int TableOfTokensToSeqOfRules (int i)
 	}
 }
 
-int SA()                             //вызываем СиА
+//возвращает число, которое находится в верхушке посл-ти (цепочки правил)
+struct nodeToStack* DelNumFromSeqOfRule(struct nodeToStack **pp)
 {
-	numOfTokenOfChain = 0;
-	Table();
-	int j = 0, i = 0;
-/*	for (i = 0; i < 47; i++)
+    if ((*pp) == NULL)
+    {
+        return NULL;
+    }
+    struct nodeToStack *p1, *p = (struct nodeToStack*)malloc(sizeof(struct nodeToStack));
+    p -> numOfRule = (*pp) -> numOfRule;    //номер правила (из грамматики)
+	p -> token = (*pp) -> token;            //номер лексемы (терм. символа) и нетерм. символа
+	p -> numToken = (*pp) -> numToken;      //номер атрибута (от 1 до 39)
+	p -> value = (*pp) -> value;            //номер в таблице имен или констант
+	p -> numString = (*pp) -> numString;    //номер строки
+	p -> position = (*pp) -> position;      //позиция в строке(в буфере)
+	p -> next = NULL;
+
+	p1 = (*pp);
+	(*pp) = (*pp) -> next;
+	free(p1);
+	return p;
+}
+
+//по последовательности правил строит ситаксическое дерево
+int BuildingOfTree (struct nodeTree **p, struct nodeToStack *p1)
+{
+	struct nodeTree *newP;
+	struct nodeToStack *fromHead;
+	if(p1 == NULL)
 	{
-		for (j = 0; j < 24; j++)
-		{
-			printf("%d ",Tab[i][j]);
-		}
-		printf("\n\n");
+	    return 0;
 	}
-*/
+	switch(p1->numOfRule)
+	{
+        case 101:
+		{
+			newP = addNodeToTree(&(*p),p1,23,1);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 102:
+		{
+			newP = addNodeToTree(&(*p),p1,24,1);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 103:
+		{
+			newP = addNodeToTree(&(*p),p1,25,2);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 104:
+		{
+			newP = addNodeToTree(&(*p),p1,25,2);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 105:
+		{
+			newP = addNodeToTree(&(*p),p1,25,2);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 106:
+		{
+			newP = addNodeToTree(&(*p),p1,25,2);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 107:
+		{
+			newP = addNodeToTree(&(*p),p1,25,2);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 108:
+		{
+			newP = addNodeToTree(&(*p),p1,25,2);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 109:
+		{
+			newP = addNodeToTree(&(*p),p1,25,2);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 110:
+		{
+			addNodeToTree(&(*p),p1,25,1);
+			break;
+		}
+        case 111:
+		{
+			newP = addNodeToTree(&(*p),p1,26,3);
+			addNodeToTree(&newP,p1,5,0);
+			addNodeToTree(&newP,p1,3,0);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 112:
+		{
+			newP = addNodeToTree(&(*p),p1,33,1);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 113:
+		{
+			addNodeToTree(&(*p),p1,33,0);
+			break;
+		}
+        case 114:
+		{
+			newP = addNodeToTree(&(*p),p1,34,1);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 115:
+		{
+			newP = addNodeToTree(&(*p),p1,34,1);
+			addNodeToTree(&newP,p1,6,0);
+			break;
+		}
+        case 116:
+		{
+			newP = addNodeToTree(&(*p),p1,27,2);
+			addNodeToTree(&newP,p1,3,0);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 117:
+		{
+			newP = addNodeToTree(&(*p),p1,28,1);
+			addNodeToTree(&newP,p1,3,0);
+			break;
+		}
+        case 118:
+		{
+			newP = addNodeToTree(&(*p),p1,29,2);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 119:
+		{
+			addNodeToTree(&(*p),p1,36,0);
+			break;
+		}
+        case 120:
+		{
+			newP = addNodeToTree(&(*p),p1,36,2);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 121:
+		{
+			newP = addNodeToTree(&(*p),p1,30,3);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 122:
+		{
+			newP = addNodeToTree(&(*p),p1,38,1);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 123:
+		{
+			addNodeToTree(&(*p),p1,38,0);
+			break;
+		}
+        case 124:
+		{
+			newP = addNodeToTree(&(*p),p1,31,4);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 125:
+		{
+			newP = addNodeToTree(&(*p),p1,32,2);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 126:
+		{
+			newP = addNodeToTree(&(*p),p1,37,2);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 127:
+		{
+			newP = addNodeToTree(&(*p),p1,40,3);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 128:
+		{
+			addNodeToTree(&(*p),p1,40,0);
+			break;
+		}
+        case 129:
+		{
+			newP = addNodeToTree(&(*p),p1,39,1);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 130:
+		{
+			newP = addNodeToTree(&(*p),p1,39,1);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 131:
+		{
+			newP = addNodeToTree(&(*p),p1,41,3);
+			addNodeToTree(&newP,p1,3,0);
+			addNodeToTree(&newP,p1,20,0);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 132:
+		{
+			newP = addNodeToTree(&(*p),p1,41,3);
+			addNodeToTree(&newP,p1,7,0);
+			addNodeToTree(&newP,p1,20,0);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 133:
+		{
+			newP = addNodeToTree(&(*p),p1,35,2);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 134:
+		{
+			newP = addNodeToTree(&(*p),p1,43,3);
+			addNodeToTree(&newP,p1,21,0);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 135:
+		{
+			addNodeToTree(&(*p),p1,43,0);
+			break;
+		}
+        case 136:
+		{
+			newP = addNodeToTree(&(*p),p1,42,2);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 137:
+		{
+			newP = addNodeToTree(&(*p),p1,45,3);
+			addNodeToTree(&newP,p1,22,0);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 138:
+		{
+			addNodeToTree(&(*p),p1,45,0);
+			break;
+		}
+        case 139:
+		{
+			newP = addNodeToTree(&(*p),p1,44,1);
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+			BuildingOfTree (&newP,fromHead);
+			break;
+		}
+        case 140:
+		{
+			newP = addNodeToTree(&(*p),p1,44,1);
+			addNodeToTree(&newP,p1,7,0);
+			break;
+		}
+        case 141:
+		{
+			newP = addNodeToTree(&(*p),p1,44,1);
+			addNodeToTree(&newP,p1,3,0);
+			break;
+		}
+	}
+	return 0;
+}
+
+// Синтаксический анализатор
+int SA()
+{
+	Table();
 	HeadOfStack = NULL;
     //добавляем в стек Prog (23)
 	AddNodeToStack(&HeadOfStack, 23);
@@ -568,26 +1012,17 @@ int SA()                             //вызываем СиА
 	TableOfTokensToSeqOfRules(Tab[HeadOfStack -> token][Head -> n.token]);
 
 	struct nodeToStack *p = HeadSeqOfRule;
+	/*
 	printf("\n\n~~~seq~~~\n\n");
 	while(p != NULL)
 	{
-	    printf("%d - ", p->numOfRule);
+	    printf("rule: %d    numToken: %d    token:%d\n", p->numOfRule, p->numToken, p -> token);
 	    p = p->next;
 	}
-	printf("\n\n");
-	while(p != NULL)
-	{
-        p = HeadSeqOfRule;
-        HeadSeqOfRule = p -> next;
-	    free(p);
-	}
-
-	//BuildingOfTree(p,101,0);				//строим дерево
-	addNodeToTree(&Root, 23, 1);
-	addNodeToTree(&Root, 21, 1);
-	struct nodeTree *pp = addNodeToTree(&Root, 0, 2);
-	addNodeToTree(&pp, 4, 2);
-
+    */
+    //строим дерево
+    p = DelNumFromSeqOfRule(&HeadSeqOfRule);
+	BuildingOfTree(&Root,p);
 	return 0;
 }
 
