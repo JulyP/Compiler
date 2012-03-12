@@ -31,7 +31,7 @@ struct node
 node *Head;
 
 void addElem(tokensFromScaner n)
-{  
+{
 	node *p = (node*)malloc(sizeof(node));
 	node *p1 = Head;
     p -> n = n;
@@ -40,7 +40,7 @@ void addElem(tokensFromScaner n)
     if (Head == NULL)
 		Head = p;
 	else
-	{  
+	{
 		while (p1 -> next  != NULL)
 			p1 = p1 -> next;
 		p -> prev = p1;
@@ -66,7 +66,7 @@ bool isLetter(char ch)     //проверка на дозволенные символы «A..Z», «a..z»
 {
 	if ((ch>='a' && ch<='z')||(ch>='A' && ch <= 'Z') ||(ch == '_'))
 		return true;
-	else 
+	else
 		return false;
 }
 
@@ -74,7 +74,7 @@ bool isDigit(char ch)     //проверка «0..9»
 {
 	if (ch>='0' && ch<='9')
 		return true;
-	else 
+	else
 		return false;
 }
 
@@ -127,7 +127,7 @@ int fail()
       //case 45:  error();break;//символ не распознан
 	  case 46:  return 47;
 	  //case 47:  error();break;//символ не распознан
-	
+
   }
 }
 
@@ -143,7 +143,7 @@ int nexttoken()
              state = 0;
              POS++;
           }
-          else 
+          else
 		  {
 			  start = state;
 			  state = fail();
@@ -153,7 +153,7 @@ int nexttoken()
 	      if (c == '<'){
           state = 2;
           }
-          else 
+          else
 		  {
 			  start = state;
 			  state = fail();
@@ -164,7 +164,7 @@ int nexttoken()
           numToken = 17;//символ <=
           return 20;
           }
-          else 
+          else
           {
 			  start = state;
 			  state = fail();
@@ -175,7 +175,7 @@ int nexttoken()
           numToken = 25;//символ <<
           return 12;
           }
-          else 
+          else
          {
 			  start = state;
 			  state = fail();
@@ -191,7 +191,7 @@ int nexttoken()
           if (c == '='){
           state = 6;
           }
-          else 
+          else
          {
 			  start = state;
 			  state = fail();
@@ -202,7 +202,7 @@ int nexttoken()
 		  numToken = 18;//символ ==
           return 20;
           }
-          else 
+          else
 {
 			  start = state;
 			  state = fail();
@@ -290,7 +290,7 @@ int nexttoken()
               start = state;
 			  state = fail();
 			 }
-          break; 
+          break;
   case 16:  c = nextchar();
 	        if (isLetter(c) || isDigit(c)){
 				count++;
@@ -303,7 +303,7 @@ int nexttoken()
                //value = LookupTableName(name);
                //if (value == 0)
                //    value = InsertTableName(name, 3);
-               //else  return token; 
+               //else  return token;
 			   return 0;//идентификатор или ключевое слово
              }
  case 17: c = nextchar();
@@ -340,21 +340,21 @@ int nexttoken()
 		  POS--;
 		  numToken = 8;
           return 5;//целое исло
-          } 
+          }
   case 21: c = nextchar();
           if (isDigit(c)){
           state = 22;
-          } 
+          }
           else
 		  {
 			  start = state;
 			  state = fail();
 		  }
-          break; 
+          break;
   case 22: c = nextchar();
           if (isDigit(c)){
           state = 22;
-          } 
+          }
 		  else{
 			  POS--;
               numToken = 9;
@@ -364,7 +364,7 @@ int nexttoken()
   case 23: c = nextchar();
           if (c == '"'){
           state = 24;
-          } 
+          }
           else
 		  {
 			  start = state;
@@ -374,7 +374,7 @@ int nexttoken()
    case 24: c = nextchar();
           if (isLetter(c) || isDigit(c)){
           state = 24;
-          } 
+          }
           else
 		  {
 			  start = state;
@@ -386,7 +386,7 @@ int nexttoken()
 			   //добавить в табл констант
 			   numToken = 27;
                return 6;//строка
-            } 
+            }
 			else
 			{
 			  start = state;
@@ -397,7 +397,7 @@ int nexttoken()
           if (c == '*'){
 		  numToken = 22;
           return 22;//умножениее
-          } 
+          }
           else
 		  {
 			  start = state;
@@ -407,7 +407,7 @@ int nexttoken()
   case 27: c = nextchar();
           if (c == '/'){
           state = 28;
-          } 
+          }
           else
 		  {
 			  start = state;
@@ -417,8 +417,8 @@ int nexttoken()
   case 28: c = nextchar();
           if (c == '/'){
           state = 29;
-          } 
-          else 
+          }
+          else
 		  {
 			  start = state;
 			  state = fail();
@@ -427,14 +427,14 @@ int nexttoken()
   case 29: c = nextchar();
           if (isLetter(c) || isDigit(c)){
           state = 29;
-          } 
+          }
           else
              return -1;
 		  break;
   case 30: c = nextchar();
           if (c == '*'){
           state = 31;
-          } 
+          }
           else
          {
 			  start = state;
@@ -444,7 +444,7 @@ int nexttoken()
   case 31: c = nextchar();
           if (isLetter(c) || isDigit(c)){
           state = 31;
-          } 
+          }
           else
           {
 			  start = state;
@@ -454,7 +454,7 @@ int nexttoken()
   case 32: c = nextchar();
           if (c == '*'){
           state = 33;
-          } 
+          }
           else
           {
 			  start = state;
@@ -464,13 +464,13 @@ int nexttoken()
   case 33: c = nextchar();
           if (c == '/'){
           return -1;
-          } 
+          }
           else
           {
 			  start = state;
 			  state = fail();
 		  }
-          break; 
+          break;
   case 34: c = nextchar();
           if ((c != '/') || (c!='*')){
 		  POS--;
@@ -488,7 +488,7 @@ int nexttoken()
 			  start = state;
 			  state = fail();
 		  }
-          break; 
+          break;
   case 36: c = nextchar();
           if (c == ','){
 			  numToken = 36;
@@ -650,7 +650,7 @@ int main(){
 			tokens.position = position;
             addElem(tokens);
 	}
-	
+
 	node *p = Head;
 	while(p != NULL)
 	{
@@ -658,7 +658,8 @@ int main(){
 		cout << p->n.token << " "<< p->n.numToken << " " << p->n.value << " " << p->n.numString << " "<< p->n.position << endl;
 		p = p->next;
 	}
+    cout << "\n\nprint!\n";
 	freeList();
-	cin>>n;
+	//cin>>n;
     return 0;
 };

@@ -58,7 +58,7 @@ struct nodeTree	                //узел дерева
 	int value;                  //номер в таблице имен или констант
 	int numString;              //номер строки
 	int position;               //позиция в строке(в буфере)
-	struct nodeTree *alpha[4];	//массив указателей на другие узлы дерева
+	struct nodeTree *alpha[5];	//массив указателей на другие узлы дерева
 };
 struct nodeTree *Root;          //указатель на корень синтаксического дерева
 
