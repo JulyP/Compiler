@@ -4,6 +4,7 @@
 // ***DATA***
 int Tab[47][24];				    //таблица, в ячейках которой хранятся номера ошибок и номера правил,
                                     //числа обозначающие выброс и допуск, таблица разбора
+
 struct nodeToStack	                //узел стека
 {
 	int numOfRule;			        //номер правила (из грамматики)
@@ -25,18 +26,29 @@ int numOfTokenOfChain;			    //номер текущего токена
 int DelNodeFromStack(struct nodeToStack **p)
 {
     struct nodeToStack *p1 = (*p);
-    (*p) = (*p) -> next;
-    free(p1);
-    return 0;
+    if ((*p) != NULL)
+    {
+        (*p) = (*p) -> next;
+        free(p1);
+        return 0;
+    }
+    return 1;
 }
 
 //удаляет лексему из потока лексем
 int DelToken(struct node **p)
 {
-    struct node *p1 = (*p);
-    (*p) = (*p) -> next;
-    free(p1);
-    return 0;
+    if ((*p) != NULL)
+    {
+        struct node *p1 = (*p);
+        (*p) = (*p) -> next;
+        free(p1);
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
 }
 
 //возвращает число, которое находится в верхушке стека (потока лексем)
@@ -78,6 +90,7 @@ int AddNodeToStack (struct nodeToStack **pp, int N_or_t)
     struct nodeToStack *p = (struct nodeToStack*)malloc(sizeof(struct nodeToStack));
     p -> numOfRule = 0;
     p -> token = N_or_t;
+    //printf("%d ", N_or_t);
     p -> next = (*pp);
     (*pp) = p;
     return 0;
@@ -88,7 +101,7 @@ struct nodeTree *addNodeToTree(struct nodeTree **p, struct nodeToStack *p1, int 
 {
 	struct nodeTree *p2 = (struct nodeTree*)malloc(sizeof(struct nodeTree));
 	int k = 0;
-	for (k = 0; k < 4; k++)
+	for (k = 0; k < 5; k++)
 	{
 		p2 -> alpha[k] = NULL;
 	}
@@ -103,14 +116,7 @@ struct nodeTree *addNodeToTree(struct nodeTree **p, struct nodeToStack *p1, int 
 	}
 	else
 	{
-	    if (j == 0)
-	    {
-	        (*p) -> alpha[j] = p2;
-	    }
-	    else
-	    {
-            (*p) -> alpha[j-1] = p2;
-	    }
+        (*p) -> alpha[j] = p2;
 	}
 	return p2;
 }
@@ -241,6 +247,7 @@ int Table()
 	Tab[42][7] = 136;
 	Tab[42][14] = 136;
 	//43
+	Tab[43][4] = 135;//hhhhhhhhhh
 	Tab[43][15] = 135;
 	Tab[43][21] = 134;
 	Tab[43][23] = 135;
@@ -249,6 +256,7 @@ int Table()
 	Tab[44][7] = 140;
 	Tab[44][14] = 139;
 	//45
+	Tab[45][4] = 138; //HHHHHHH
 	Tab[45][15] = 138;
 	Tab[45][21] = 138;
 	Tab[45][22] = 137;
@@ -257,7 +265,85 @@ int Table()
 	Tab[46][23] = 100;
 	return 0;
 }
+/*
+int addSinError(int i, int j, int k, struct error **pp)
+{
+    struct error *p1, *p = (struct error*)malloc(sizeof(struct error));
+    p -> numOfError = i;
+    p -> typeOFError = 1;
+    p -> numOfString = j;
+    p -> position = k;
+    p -> next = NULL;
 
+    if ((*pp) == NULL)
+    {
+        *pp = p;
+    }
+
+    p1 = *pp;
+    while (p1 -> next != NULL)
+    {
+        p1 = (*pp) -> next;
+    }
+    p1 -> next = p;
+    return 0;
+}
+
+//разбор при ошибках
+int Error (int i, int j, int k, struct error *pp)
+{
+	addSinError (i,j,k,&p);
+	if (i==-1||i==-2||(i>=-6&&i<=-11)||i==-13||i==-14||i==-16||(i>=-20&&i<=-28)||i==-32||i==-33)
+	{
+		//пропуск до ;
+		while (NumFromStack() != 4)
+		{
+			numOfTokenOfChain++;
+			DelNodeFromStack();
+		}
+		return 0;
+	}
+	else
+	{
+		if (i==-3||i==-5)
+		{
+			if (i==-3)
+			{
+				int j = NumFromStack();
+				//пропуск до else, type, id, cin, cout, if, for, while, { или ;
+				while (j!=16||j!=5||j!=3||j!=9||j!=11||j!=13||j!=17||j!=18||j!=1||j!=4)
+				{
+					numOfTokenOfChain++;
+					DelNodeFromStack();
+					j = NumFromStack();
+				}
+				return 0;
+			}
+			else
+			{
+				//пропуск до }
+				while (NumFromStack() != 2)
+				{
+					numOfTokenOfChain++;
+					DelNodeFromStack();
+				}
+				return 0;
+			}
+
+		}
+		else
+		{
+			//пропуск до {
+			while (NumFromStack() != 1)
+			{
+				numOfTokenOfChain++;
+				DelNodeFromStack();
+			}
+			return 0;
+		}
+	}
+}
+*/
 //по потоку лексем строит цепочку правил
 int TableOfTokensToSeqOfRules (int i)
 {
@@ -269,6 +355,7 @@ int TableOfTokensToSeqOfRules (int i)
 		{
 		    //удаляем из стека вершину
 			DelNodeFromStack(&HeadOfStack);
+
             //увеличиваем счетчик токенов входной цепочки, то есть будем считывать следующую вершину
 			//numOfTokenOfChain++;
 			DelToken(&Head);
@@ -283,7 +370,7 @@ int TableOfTokensToSeqOfRules (int i)
 			    case 100:
 			    {
 			        //конец разбора, цепочка построена
-			        printf("\n\nEND!\n\n");
+			        //printf("\n\nEND!\n\n");
 			        return 0;
 			    }
                 case 101:
@@ -369,6 +456,7 @@ int TableOfTokensToSeqOfRules (int i)
                 {
                     //меняем DescrVar на type id EquExpr
                     DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину DescrVar
+                    AddNodeToStack(&HeadOfStack, 4);        //добавляем в стек вершину ;
                     AddNodeToStack(&HeadOfStack, 33);		//добавляем в стек вершину EquExpr
                     AddNodeToStack(&HeadOfStack, 3);		//добавляем в стек вершину id
                     AddNodeToStack(&HeadOfStack, 5);		//добавляем в стек вершину type
@@ -430,6 +518,7 @@ int TableOfTokensToSeqOfRules (int i)
                     AddNodeToStack(&HeadOfStack, 4);		//добавляем в стек вершину ;
                     AddNodeToStack(&HeadOfStack, 3);		//добавляем в стек вершину FuncOut
                     AddNodeToStack(&HeadOfStack, 10);		//добавляем в стек вершину Expr
+                    AddNodeToStack(&HeadOfStack, 12);		//добавляем в стек вершину <<
                     AddNodeToStack(&HeadOfStack, 9);		//добавляем в стек вершину cout
                     break;
                 }
@@ -675,324 +764,362 @@ int BuildingOfTree (struct nodeTree **p, struct nodeToStack *p1)
 	{
         case 101:
 		{
-			newP = addNodeToTree(&(*p),p1,23,1);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+		    newP = addNodeToTree(&(*p),p1,24,0);            //add Block
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //del rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Block
 			break;
 		}
         case 102:
 		{
-			newP = addNodeToTree(&(*p),p1,24,1);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,25,0);            //add Sent
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //del rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Sent
 			break;
 		}
         case 103:
 		{
-			newP = addNodeToTree(&(*p),p1,25,2);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,26,0);            //add DescrVar
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from DescrVar
+
+			newP = addNodeToTree(&(*p),p1,25,1);            //add Sent
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Sent
 			break;
 		}
         case 104:
 		{
-			newP = addNodeToTree(&(*p),p1,25,2);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,27,0);            //add OpEqu
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from OpEqu
+
+			newP = addNodeToTree(&(*p),p1,25,1);            //add Sent
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Sent
+			break;OfTree (&newP,fromHead);
 			break;
 		}
         case 105:
 		{
-			newP = addNodeToTree(&(*p),p1,25,2);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,28,0);            //add OpIn
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from OpIn
+
+			newP = addNodeToTree(&(*p),p1,25,1);            //add Sent
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Sent
 			break;
 		}
         case 106:
 		{
-			newP = addNodeToTree(&(*p),p1,25,2);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,29,0);            //add OpOut
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from OpOut
+
+			newP = addNodeToTree(&(*p),p1,25,1);            //add Sent
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Sent
 			break;
 		}
         case 107:
 		{
-			newP = addNodeToTree(&(*p),p1,25,2);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,30,0);            //add OpIf
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from OpIf
+
+			newP = addNodeToTree(&(*p),p1,25,1);            //add Sent
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Sent
 			break;
 		}
         case 108:
 		{
-			newP = addNodeToTree(&(*p),p1,25,2);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,31,0);            //add OpFor
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from OpFor
+
+			newP = addNodeToTree(&(*p),p1,25,1);            //add Sent
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Sent
 			break;
 		}
         case 109:
 		{
-			newP = addNodeToTree(&(*p),p1,25,2);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,32,0);            //add OpWhile
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from OpWhile
+
+			newP = addNodeToTree(&(*p),p1,25,1);            //add Sent
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Sent
 			break;
 		}
         case 110:
 		{
-			addNodeToTree(&(*p),p1,25,1);
+			addNodeToTree(&(*p),p1,50,0);                   //add lambda
 			break;
 		}
         case 111:
 		{
-			newP = addNodeToTree(&(*p),p1,26,3);
-			addNodeToTree(&newP,p1,5,0);
-			addNodeToTree(&newP,p1,3,0);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			addNodeToTree(&(*p),p1,5,0);                    //add type
+			addNodeToTree(&(*p),p1,3,1);                    //add id
+			newP = addNodeToTree(&(*p),p1,33,2);            //add EquExpr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from EquExpr
 			break;
 		}
         case 112:
 		{
-			newP = addNodeToTree(&(*p),p1,33,1);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,34,0);            //add Expr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Expr
 			break;
 		}
         case 113:
 		{
-			addNodeToTree(&(*p),p1,33,0);
+			addNodeToTree(&(*p),p1,50,0);                   //add lambda
 			break;
 		}
         case 114:
 		{
-			newP = addNodeToTree(&(*p),p1,34,1);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,35,0);            //add ArExpr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from ArExpr
 			break;
 		}
         case 115:
 		{
-			newP = addNodeToTree(&(*p),p1,34,1);
-			addNodeToTree(&newP,p1,6,0);
+			addNodeToTree(&(*p),p1,6,0);                    //add conststr
 			break;
 		}
         case 116:
 		{
-			newP = addNodeToTree(&(*p),p1,27,2);
-			addNodeToTree(&newP,p1,3,0);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+		    addNodeToTree(&(*p),p1,3,0);                    //add id
+			newP = addNodeToTree(&(*p),p1,34,1);            //add Expr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Expr
 			break;
 		}
         case 117:
 		{
-			newP = addNodeToTree(&(*p),p1,28,1);
-			addNodeToTree(&newP,p1,3,0);
+			addNodeToTree(&(*p),p1,3,0);                   //add id
 			break;
 		}
         case 118:
 		{
-			newP = addNodeToTree(&(*p),p1,29,2);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,34,0);            //add Expr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Expr
+
+			newP = addNodeToTree(&(*p),p1,36,1);            //add FuncOut
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from FuncOut
 			break;
 		}
         case 119:
 		{
-			addNodeToTree(&(*p),p1,36,0);
+			addNodeToTree(&(*p),p1,50,0);                   //add lambda
 			break;
 		}
         case 120:
 		{
-			newP = addNodeToTree(&(*p),p1,36,2);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,34,0);            //add Expr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Expr
+
+			newP = addNodeToTree(&(*p),p1,36,1);            //add FuncOut
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from FuncOut
 			break;
 		}
         case 121:
 		{
-			newP = addNodeToTree(&(*p),p1,30,3);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,37,0);            //add CondExpr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from CondExpr
+
+			newP = addNodeToTree(&(*p),p1,24,1);            //add Block
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Block
+
+			newP = addNodeToTree(&(*p),p1,38,2);            //add Else
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Else
 			break;
 		}
         case 122:
 		{
-			newP = addNodeToTree(&(*p),p1,38,1);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,24,0);            //add Block
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Block
 			break;
 		}
         case 123:
 		{
-			addNodeToTree(&(*p),p1,38,0);
+			addNodeToTree(&(*p),p1,50,0);                   //add lambda
 			break;
 		}
         case 124:
 		{
-			newP = addNodeToTree(&(*p),p1,31,4);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,27,0);            //add OpEqu
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from OpEqu
+
+			newP = addNodeToTree(&(*p),p1,37,1);            //add CondExpr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from CondExpr
+
+			newP = addNodeToTree(&(*p),p1,35,2);            //add ArExpr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from ArExpr
+
+			newP = addNodeToTree(&(*p),p1,24,3);            //add Block
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Block
 			break;
 		}
         case 125:
 		{
-			newP = addNodeToTree(&(*p),p1,32,2);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,37,0);            //add CondExpr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from CondExpr
+
+			newP = addNodeToTree(&(*p),p1,24,1);            //add Block
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Block
 			break;
 		}
         case 126:
 		{
-			newP = addNodeToTree(&(*p),p1,37,2);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,39,0);            //add DiffCondExpr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from DiffCondExpr
+
+			newP = addNodeToTree(&(*p),p1,40,1);            //add SecDCE
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree secDCE
 			break;
 		}
         case 127:
 		{
-			newP = addNodeToTree(&(*p),p1,40,3);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
+		    addNodeToTree(&(*p),p1,19,0);                   //add compop
+			newP = addNodeToTree(&(*p),p1,39,1);            //add DiffCondExpr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from DiffCondExpr
+
+			newP = addNodeToTree(&(*p),p1,40,2);            //add SecDCE
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
 			BuildingOfTree (&newP,fromHead);
 			break;
 		}
         case 128:
 		{
-			addNodeToTree(&(*p),p1,40,0);
+			addNodeToTree(&(*p),p1,50,0);                   //add lambda
 			break;
 		}
         case 129:
 		{
-			newP = addNodeToTree(&(*p),p1,39,1);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,37,0);            //add CondExpr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from CondExpr
 			break;
 		}
         case 130:
 		{
-			newP = addNodeToTree(&(*p),p1,39,1);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,41,0);            //add SimpCondExpr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from SimpCondExpr
 			break;
 		}
         case 131:
 		{
-			newP = addNodeToTree(&(*p),p1,41,3);
-			addNodeToTree(&newP,p1,3,0);
-			addNodeToTree(&newP,p1,20,0);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+		    addNodeToTree(&(*p),p1,3,0);                    //add id
+			addNodeToTree(&(*p),p1,20,1);                   //add relop
+			newP = addNodeToTree(&(*p),p1,35,2);            //add ArExpr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from ArExpr
 			break;
 		}
         case 132:
 		{
-			newP = addNodeToTree(&(*p),p1,41,3);
-			addNodeToTree(&newP,p1,7,0);
-			addNodeToTree(&newP,p1,20,0);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+		    addNodeToTree(&(*p),p1,7,0);                    //add constnum
+			addNodeToTree(&(*p),p1,20,1);                   //add relop
+			newP = addNodeToTree(&(*p),p1,35,2);            //add ArExpr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from ArExpr
 			break;
 		}
         case 133:
 		{
-			newP = addNodeToTree(&(*p),p1,35,2);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,42,0);            //add Addendum
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Addendum
+
+			newP = addNodeToTree(&(*p),p1,43,1);            //add SecAddendum
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from SecAddendum
 			break;
 		}
         case 134:
 		{
-			newP = addNodeToTree(&(*p),p1,43,3);
-			addNodeToTree(&newP,p1,21,0);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+		    addNodeToTree(&(*p),p1,21,0);                   //add addop
+			newP = addNodeToTree(&(*p),p1,42,1);            //add Addendum
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Addendum
+
+			newP = addNodeToTree(&(*p),p1,43,2);            //add SecAddendum
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from SecAddendum
 			break;
 		}
         case 135:
 		{
-			addNodeToTree(&(*p),p1,43,0);
+			addNodeToTree(&(*p),p1,50,0);                   //add lambda
 			break;
 		}
         case 136:
 		{
-			newP = addNodeToTree(&(*p),p1,42,2);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,44,0);            //add Multiplier
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Multiplier
+
+			newP = addNodeToTree(&(*p),p1,45,1);            //add SecMultiplier
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from SecMultiplier
 			break;
 		}
         case 137:
 		{
-			newP = addNodeToTree(&(*p),p1,45,3);
-			addNodeToTree(&newP,p1,22,0);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
-			//fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+		    addNodeToTree(&(*p),p1,22,0);                   //add multop
+			newP = addNodeToTree(&(*p),p1,44,1);            //add Multiplier
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from Multiplier
+
+			newP = addNodeToTree(&(*p),p1,45,2);            //add SecMultiplier
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from SecMultiplier
 			break;
 		}
         case 138:
 		{
-			addNodeToTree(&(*p),p1,45,0);
+			addNodeToTree(&(*p),p1,50,0);                   //add lambda
 			break;
 		}
         case 139:
 		{
-			newP = addNodeToTree(&(*p),p1,44,1);
-			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule);
-			BuildingOfTree (&newP,fromHead);
+			newP = addNodeToTree(&(*p),p1,35,0);            //add ArExpr
+			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
+			BuildingOfTree (&newP,fromHead);                //build tree from ArExpr
 			break;
 		}
         case 140:
 		{
-			newP = addNodeToTree(&(*p),p1,44,1);
-			addNodeToTree(&newP,p1,7,0);
+			addNodeToTree(&(*p),p1,7,0);                    //add constnum
 			break;
 		}
         case 141:
 		{
-			newP = addNodeToTree(&(*p),p1,44,1);
-			addNodeToTree(&newP,p1,3,0);
+			addNodeToTree(&(*p),p1,3,0);                    //add id
 			break;
 		}
 	}
@@ -1004,6 +1131,8 @@ int SA()
 {
 	Table();
 	HeadOfStack = NULL;
+	//Добавляем в стек (в автомат) #
+	AddNodeToStack(&HeadOfStack, 46);
     //добавляем в стек Prog (23)
 	AddNodeToStack(&HeadOfStack, 23);
 
@@ -1011,17 +1140,10 @@ int SA()
     HeadSeqOfRule = NULL;
 	TableOfTokensToSeqOfRules(Tab[HeadOfStack -> token][Head -> n.token]);
 
-	struct nodeToStack *p = HeadSeqOfRule;
-	/*
-	printf("\n\n~~~seq~~~\n\n");
-	while(p != NULL)
-	{
-	    printf("rule: %d    numToken: %d    token:%d\n", p->numOfRule, p->numToken, p -> token);
-	    p = p->next;
-	}
-    */
     //строим дерево
+	struct nodeToStack *p;
     p = DelNumFromSeqOfRule(&HeadSeqOfRule);
+    addNodeToTree(&Root,p,23,0);
 	BuildingOfTree(&Root,p);
 	return 0;
 }
