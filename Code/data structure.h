@@ -55,11 +55,7 @@ struct Constant                 //таблица констант
 //ИЗ СИТАНКСИЧЕСКОГО АНАЛИЗАТОРА
 struct nodeTree	                //узел дерева
 {
-	int token;                  //номер токена (от 0 до 23)
-	int numToken;               //номер атрибута (от 1 до 39)
-	int value;                  //номер в таблице имен или констант
-	int numString;              //номер строки
-	int position;               //позиция в строке(в буфере)
+	struct tokensFromScaner n;  //лексема со всеми её атрибутами
 	struct nodeTree *alpha[4];	//массив указателей на другие узлы дерева
 };
 struct nodeTree *Root;          //указатель на корень синтаксического дерева

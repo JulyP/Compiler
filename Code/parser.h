@@ -2,17 +2,15 @@
 #define PARSER_H_INCLUDED
 
 // ***DATA***
+struct node *Head1;
+
 int Tab[47][24];				    //таблица, в ячейках которой хранятся номера ошибок и номера правил,
                                     //числа обозначающие выброс и допуск, таблица разбора
 
 struct nodeToStack	                //узел стека
 {
 	int numOfRule;			        //номер правила (из грамматики)
-	int token;			            //номер лексемы (терм. символа) и нетерм. символа
-	int numToken;                   //номер атрибута (от 1 до 39)
-	int value;                      //номер в таблице имен или констант
-	int numString;                  //номер строки
-	int position;                   //позиция в строке(в буфере)
+	struct tokensFromScaner n;      //лексема со всеми её атрибутами
 	struct nodeToStack *next;	    //указатель на следующий элемент
 };
 struct nodeToStack *HeadSeqOfRule;  //Цепочка правил
@@ -58,16 +56,12 @@ int NumFromStack(struct node **p)
 }
 
 //добавляет в посл-ть (в конец посл-ти) правил номер правила, атр.токена
-int AddNodeToSeqOfRules(struct nodeToStack **pp, int rule, int token, int numToken, int position, int numString, int value)
+int AddNodeToSeqOfRules(struct nodeToStack **pp, int rule, struct tokensFromScaner token)
 {
     struct nodeToStack *p1, *p = (struct nodeToStack*)malloc(sizeof(struct nodeToStack));
     p -> numOfRule = rule;
-    p -> numToken = numToken;
-    p -> token = token;
+    p -> n = token;
     p -> next = NULL;
-    p -> position = position;
-    p -> numString = numString;
-    p -> value = value;
     p1 = (*pp);
     if (p1 != NULL)
     {
@@ -84,12 +78,12 @@ int AddNodeToSeqOfRules(struct nodeToStack **pp, int rule, int token, int numTok
     return 0;
 }
 
-//добавляет в стек номер нетерминала или лексемы
+//добавляет в стек (в магазин) номер нетерминала или лексемы
 int AddNodeToStack (struct nodeToStack **pp, int N_or_t)
 {
     struct nodeToStack *p = (struct nodeToStack*)malloc(sizeof(struct nodeToStack));
     p -> numOfRule = 0;
-    p -> token = N_or_t;
+    p -> n.token = N_or_t;
     //printf("%d ", N_or_t);
     p -> next = (*pp);
     (*pp) = p;
@@ -101,15 +95,12 @@ struct nodeTree *addNodeToTree(struct nodeTree **p, struct nodeToStack *p1, int 
 {
 	struct nodeTree *p2 = (struct nodeTree*)malloc(sizeof(struct nodeTree));
 	int k = 0;
-	for (k = 0; k < 5; k++)
+	for (k = 0; k < 4; k++)
 	{
 		p2 -> alpha[k] = NULL;
 	}
-	p2 -> token = neterminal;                   //номер лексемы (0 - 22), (23 - 46)
-	p2 -> numToken = p1 -> numToken;            //номер атрибута (от 1 до 39)
-	p2 -> value = p1 -> value;                  //номер в таблице имен или констант
-	p2 -> numString = p1 -> numString;          //номер строки
-	p2 -> position = p1 -> position;            //позиция в строке(в буфере)
+	p2 -> n = p1 -> n;                      //copy token from stek
+	p2 -> n.token = neterminal;             //номер лексемы (0 - 22), (23 - 46)
 	if (neterminal == 23)
 	{
 		(*p) = p2;
@@ -364,7 +355,7 @@ int TableOfTokensToSeqOfRules (int i)
 		else
 		{
 			//добавляем в цепочку правил правило
-			AddNodeToSeqOfRules(&HeadSeqOfRule,i,Head->n.token,Head->n.numToken,Head->n.position,Head->n.numString,Head->n.value);
+			AddNodeToSeqOfRules(&HeadSeqOfRule,i,Head -> n);
 			switch(i)
 			{
 			    case 100:
@@ -718,7 +709,7 @@ int TableOfTokensToSeqOfRules (int i)
 			}
 		}
 		//продолжаем разбор
-		TableOfTokensToSeqOfRules(Tab[HeadOfStack -> token][Head -> n.token]);
+		TableOfTokensToSeqOfRules(Tab[HeadOfStack -> n.token][Head -> n.token]);
 		return 0;
 	}
 	//ошибка
@@ -730,7 +721,7 @@ int TableOfTokensToSeqOfRules (int i)
 }
 
 //возвращает число, которое находится в верхушке посл-ти (цепочки правил)
-struct nodeToStack* DelNumFromSeqOfRule(struct nodeToStack **pp)
+struct nodeToStack *DelNumFromSeqOfRule(struct nodeToStack **pp)
 {
     if ((*pp) == NULL)
     {
@@ -738,17 +729,30 @@ struct nodeToStack* DelNumFromSeqOfRule(struct nodeToStack **pp)
     }
     struct nodeToStack *p1, *p = (struct nodeToStack*)malloc(sizeof(struct nodeToStack));
     p -> numOfRule = (*pp) -> numOfRule;    //номер правила (из грамматики)
-	p -> token = (*pp) -> token;            //номер лексемы (терм. символа) и нетерм. символа
-	p -> numToken = (*pp) -> numToken;      //номер атрибута (от 1 до 39)
-	p -> value = (*pp) -> value;            //номер в таблице имен или констант
-	p -> numString = (*pp) -> numString;    //номер строки
-	p -> position = (*pp) -> position;      //позиция в строке(в буфере)
+	p -> n = (*pp) -> n;                    //token
 	p -> next = NULL;
-
 	p1 = (*pp);
 	(*pp) = (*pp) -> next;
 	free(p1);
 	return p;
+}
+
+//возвращает
+struct nodeToStack *returnToken(int number)
+{
+    struct node *p1 = Head1;
+    struct nodeToStack *p = (struct nodeToStack*)malloc(sizeof(struct nodeToStack));
+    int i = 0;
+
+    for (i = 1; i <= number; i++)
+    {
+        p1 = p1 -> next;
+    }
+
+    p->n = p1->n;
+    p->next = NULL;
+
+    return p;
 }
 
 //по последовательности правил строит ситаксическое дерево
@@ -862,7 +866,7 @@ int BuildingOfTree (struct nodeTree **p, struct nodeToStack *p1)
         case 111:
 		{
 			addNodeToTree(&(*p),p1,5,0);                    //add type
-			addNodeToTree(&(*p),p1,3,1);                    //add id
+			addNodeToTree(&(*p),returnToken(p1->n.number),3,1); //add id
 			newP = addNodeToTree(&(*p),p1,33,2);            //add EquExpr
 			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
 			BuildingOfTree (&newP,fromHead);                //build tree from EquExpr
@@ -1034,7 +1038,7 @@ int BuildingOfTree (struct nodeTree **p, struct nodeToStack *p1)
         case 131:
 		{
 		    addNodeToTree(&(*p),p1,3,0);                    //add id
-			addNodeToTree(&(*p),p1,20,1);                   //add relop
+			addNodeToTree(&(*p),returnToken(p1->n.number),20,1);    //add relop
 			newP = addNodeToTree(&(*p),p1,35,2);            //add ArExpr
 			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
 			BuildingOfTree (&newP,fromHead);                //build tree from ArExpr
@@ -1043,7 +1047,7 @@ int BuildingOfTree (struct nodeTree **p, struct nodeToStack *p1)
         case 132:
 		{
 		    addNodeToTree(&(*p),p1,7,0);                    //add constnum
-			addNodeToTree(&(*p),p1,20,1);                   //add relop
+			addNodeToTree(&(*p),returnToken(p1->n.number),20,1);    //add relop
 			newP = addNodeToTree(&(*p),p1,35,2);            //add ArExpr
 			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
 			BuildingOfTree (&newP,fromHead);                //build tree from ArExpr
@@ -1129,22 +1133,61 @@ int BuildingOfTree (struct nodeTree **p, struct nodeToStack *p1)
 // Синтаксический анализатор
 int SA()
 {
+    //копируем поток лексем
+    struct node *p1 = Head, *p2;
+    struct node *p3 = (struct node*)malloc(sizeof(struct node));
+    while (p1->next != NULL)
+    {
+        p1 = p1 -> next;
+    }
+    p3->n.token=23;
+	p3->n.numToken=50;
+	p3->n.number = 0;
+	p3->next=NULL;
+	p1->next=p3;
+
+    p1 = Head;
+    p3 = (struct node*)malloc(sizeof(struct node));
+    p3 -> n = p1 -> n;
+    p3 -> next = NULL;
+    p3 -> prev = NULL;
+    Head1 = p3;
+    p2 = Head1;
+    p1 = p1 -> next;
+    while (p1 != NULL)
+    {
+        struct node *p3 = (struct node*)malloc(sizeof(struct node));
+        p3 -> n = p1 -> n;
+        p3 -> next = NULL;
+        p3 -> prev = NULL;
+        p2 -> next = p3;
+        p2 = p2 -> next;
+        p1 = p1 -> next;
+    }
+
+    // *** начинаем строить цепочку **
+    //заполняем таблицу
 	Table();
 	HeadOfStack = NULL;
-	//Добавляем в стек (в автомат) #
+	//Добавляем в стек (в автомат) # (46)
 	AddNodeToStack(&HeadOfStack, 46);
-    //добавляем в стек Prog (23)
+    //добавляем в стек (в автомат) Prog (23)
 	AddNodeToStack(&HeadOfStack, 23);
-
     //строим цепочку, начинаем с первой лексемы
     HeadSeqOfRule = NULL;
-	TableOfTokensToSeqOfRules(Tab[HeadOfStack -> token][Head -> n.token]);
+	TableOfTokensToSeqOfRules(Tab[HeadOfStack -> n.token][Head -> n.token]);
 
-    //строим дерево
+    // *** строим дерево            **
 	struct nodeToStack *p;
     p = DelNumFromSeqOfRule(&HeadSeqOfRule);
+    //добавляем в корень Prog
     addNodeToTree(&Root,p,23,0);
 	BuildingOfTree(&Root,p);
+
+	if (HeadSeqOfRule != NULL)
+	{
+	    printf("\n\n%d\n\n", HeadSeqOfRule->numOfRule);
+	}
 	return 0;
 }
 
