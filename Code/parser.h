@@ -2,7 +2,7 @@
 #define PARSER_H_INCLUDED
 
 // ***DATA***
-struct node *Head1;
+struct node *Head1;                 //запасной поток лексем
 
 int Tab[47][24];				    //таблица, в ячейках которой хранятся номера ошибок и номера правил,
                                     //числа обозначающие выброс и допуск, таблица разбора
@@ -50,9 +50,9 @@ int DelToken(struct node **p)
 }
 
 //возвращает число, которое находится в верхушке стека (потока лексем)
-int NumFromStack(struct node **p)
+int NumFromStack()
 {
-    return (*p) -> n.numToken;
+    return Head -> n.token;
 }
 
 //добавляет в посл-ть (в конец посл-ти) правил номер правила, атр.токена
@@ -256,41 +256,43 @@ int Table()
 	Tab[46][23] = 100;
 	return 0;
 }
-/*
-int addSinError(int i, int j, int k, struct error **pp)
+
+int addSinError(int i)
 {
     struct error *p1, *p = (struct error*)malloc(sizeof(struct error));
     p -> numOfError = i;
-    p -> typeOFError = 1;
-    p -> numOfString = j;
-    p -> position = k;
+    p -> typeOFError = 2;
+    p -> numOfString = HeadOfStack->n.numString;
+    p -> position = HeadOfStack->n.position;
     p -> next = NULL;
 
-    if ((*pp) == NULL)
+    if (Errors == NULL)
     {
-        *pp = p;
+        Errors = p;
     }
-
-    p1 = *pp;
-    while (p1 -> next != NULL)
+    else
     {
-        p1 = (*pp) -> next;
+        p1 = Errors;
+        while (p1 -> next != NULL)
+        {
+            p1 = p1 -> next;
+        }
+        p1 -> next = p;
     }
-    p1 -> next = p;
     return 0;
 }
 
 //разбор при ошибках
-int Error (int i, int j, int k, struct error *pp)
+int Error (int i)
 {
-	addSinError (i,j,k,&p);
+	addSinError (i);
 	if (i==-1||i==-2||(i>=-6&&i<=-11)||i==-13||i==-14||i==-16||(i>=-20&&i<=-28)||i==-32||i==-33)
 	{
 		//пропуск до ;
 		while (NumFromStack() != 4)
 		{
-			numOfTokenOfChain++;
-			DelNodeFromStack();
+			DelToken(&Head);
+			DelNodeFromStack(&HeadOfStack);
 		}
 		return 0;
 	}
@@ -304,8 +306,8 @@ int Error (int i, int j, int k, struct error *pp)
 				//пропуск до else, type, id, cin, cout, if, for, while, { или ;
 				while (j!=16||j!=5||j!=3||j!=9||j!=11||j!=13||j!=17||j!=18||j!=1||j!=4)
 				{
-					numOfTokenOfChain++;
-					DelNodeFromStack();
+					DelToken(&Head);
+					DelNodeFromStack(&HeadOfStack);
 					j = NumFromStack();
 				}
 				return 0;
@@ -315,8 +317,8 @@ int Error (int i, int j, int k, struct error *pp)
 				//пропуск до }
 				while (NumFromStack() != 2)
 				{
-					numOfTokenOfChain++;
-					DelNodeFromStack();
+					DelToken(&Head);
+					DelNodeFromStack(&HeadOfStack);
 				}
 				return 0;
 			}
@@ -327,14 +329,14 @@ int Error (int i, int j, int k, struct error *pp)
 			//пропуск до {
 			while (NumFromStack() != 1)
 			{
-				numOfTokenOfChain++;
-				DelNodeFromStack();
+				DelToken(&Head);
+				DelNodeFromStack(&HeadOfStack);
 			}
 			return 0;
 		}
 	}
 }
-*/
+
 //по потоку лексем строит цепочку правил
 int TableOfTokensToSeqOfRules (int i)
 {
@@ -715,7 +717,7 @@ int TableOfTokensToSeqOfRules (int i)
 	//ошибка
 	else
 	{
-		//Error(i);
+		Error(i);
 		return 1;
 	}
 }
