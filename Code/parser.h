@@ -257,6 +257,7 @@ int Table()
 	return 0;
 }
 
+//are adding node to Errors (seq. of error)
 int addSinError(int i)
 {
     struct error *p1, *p = (struct error*)malloc(sizeof(struct error));
@@ -282,65 +283,363 @@ int addSinError(int i)
     return 0;
 }
 
+//are adding node to Head (tokens from scanner)
+int AddNodeToHead(int i, struct node **p)
+{
+    struct node *p1 = (struct node*)malloc(sizeof(struct node));
+    p1 -> n.token = i;
+    p1 -> next = (*p);
+    (*p) -> prev = p1;
+    (*p) = p1;
+    return 0;
+}
+
 //разбор при ошибках
 int Error (int i)
 {
 	addSinError (i);
-	if (i==-1||i==-2||(i>=-6&&i<=-11)||i==-13||i==-14||i==-16||(i>=-20&&i<=-28)||i==-32||i==-33)
+	printf("\n\nerror  %d\n\n",i);
+	switch (i)
 	{
-		//пропуск до ;
-		while (NumFromStack() != 4)
-		{
-			DelToken(&Head);
-			DelNodeFromStack(&HeadOfStack);
-		}
-		return 0;
+	    case -1:    //'type' is expected
+	    {
+	        AddNodeToHead(5, &Head);                //token 'type' was added to Head
+	        break;
+        }
+	    case -2:    //'id' is expected
+	    {
+	        if (NumFromStack() == 8)                //if '=' was met
+	        {
+	            AddNodeToHead(3,&Head);             //token 'id' was added to Head (sequence of tokens)
+	        }
+	        else
+	        {
+	            while (NumFromStack() != 4)         //while ';' will not be find
+	            {
+	                if (NumFromStack() == 23)               //'Л'
+                    {
+                        while (HeadOfStack->n.token != 46)  //'#'
+                        {
+                            DelNodeFromStack(&HeadOfStack); //token "no_#" was deleted from Head
+                        }
+                        return 0;
+                    }
+	                DelToken(&Head);                //token "no_;" was deleted from Head
+	            }
+	            while (HeadOfStack->n.token != 4)   //while ';' will not be find
+	            {
+	                DelNodeFromStack(&HeadOfStack); //token "no_;" was deleted from Head
+	            }
+	        }
+	        break;
+	    }
+	    case -3:    //'else', 'type', 'id', 'cin', 'cout', 'if', 'for', 'while' or '}' are expected
+	    {
+	        int j = NumFromStack();
+	        if (j == 1)                         //if the next token is '{'
+	        {
+	            AddNodeToHead(16,&Head);        //token 'else' was added to Head
+	        }
+	        else
+	        {
+	            //while 'type', 'id', 'cin', 'cout', 'if', 'for' , 'while' or '}' will not be find
+                while (j!=5 && j!=3 && j!=9 && j!=11 && j!=13 && j!=17 && j!=18 && j!=2)
+                {
+                    if (j == 23)                    //'Л'
+                    {
+                        while (HeadOfStack->n.token != 46)  //'#'
+                        {
+                            DelNodeFromStack(&HeadOfStack); //token "no_#" was deleted from Head
+                        }
+                        return 0;
+                    }
+                    DelToken(&Head);                //token "no_;" was deleted from Head
+                    j = NumFromStack();
+                }
+                while (HeadOfStack->n.token != 25)   //while 'Sent' will not be find
+                {
+                    DelNodeFromStack(&HeadOfStack); //token "no_Sent" was deleted from Head
+                }
+	        }
+	        break;
+        }
+	    case -4:    //'&&', '||' or ')' are expected
+	    {
+	        int j = NumFromStack();
+	        if (j==3 || j==7 || j==14)          //'id', 'constnum', '('
+ 	        {
+	            AddNodeToHead(19, &Head);       //token 'compop' was added to Head
+	        }
+	        else
+	        {
+	            AddNodeToHead(15, &Head);       //token ')' was added to Head
+	        }
+	        break;
+        }
+	    case -5:    //'{' is expected
+	    {
+            AddNodeToHead(1,&Head);                 //token '{' was added to Head (sequence of tokens)
+	        break;
+        }
+	    case -6:    //'id' or 'constnum' are expected
+	    {
+	        AddNodeToHead(3,&Head);                 //token 'id' was added to Head (sequence of tokens)
+	        break;
+	    }
+	    case -7:    //'-', '+' or '(' are expected
+        case -8:    //'cout' is expected
+        case -10:   //'cin' is expected
+        case -11:   //'*', '/' or ')' are expected
+        case -16:   //'conststr' is expected
+        case -22:   //'constnum', 'conststr', 'id' or '(' are expected
+	    {
+	        while (NumFromStack() != 4)         //while ';' will not be find
+            {
+                printf("tok: %d   ", NumFromStack());
+                if (NumFromStack() == 23)                    //'Л'
+                {
+                    while (HeadOfStack->n.token != 46)  //'#'
+                    {
+                        DelNodeFromStack(&HeadOfStack); //token "no_#" was deleted from Head
+                        printf("Stack: %d   ", HeadOfStack->n.token);
+                    }
+                    return 0;
+                }
+                DelToken(&Head);                //token "no_;" was deleted from Head
+	        }
+            while (HeadOfStack->n.token != 4 && HeadOfStack->n.token != 46)   //while ';' will not be find
+            {
+                DelNodeFromStack(&HeadOfStack); //token "no_;" was deleted from Head
+            }
+	        break;
+        }
+	    case -9:    //'<<' or ';' are expected
+        {
+	        int j = NumFromStack();
+	        if (j==3 || j==6 || j==7 || j==14)  //id, conststr, constnum, (
+	        {
+	            AddNodeToHead(12,&Head);         //token '<<' was added to Head
+	        }
+	        else
+	        {
+	            if (j==5 || j==3 || j==9 || j==11 || j==13 || j==17 || j==18 || j==2)
+	            {
+	                AddNodeToHead(4,&Head);     //token ';' was added to Head
+	            }
+	            else
+	            {
+	                while (NumFromStack() != 4 && NumFromStack() != 8)
+	                {
+	                    if (j == 23)                            //'Л'
+                        {
+                            while (HeadOfStack->n.token != 46)  //'#'
+                            {
+                                DelNodeFromStack(&HeadOfStack); //token "no_#" was deleted from Head
+                            }
+                            return 0;
+                        }
+	                    DelToken(&Head);
+	                    j = NumFromStack();
+	                }
+	            }
+	        }
+	        break;
+        }
+	    case -12:   //'}' is expected
+	    {
+	        AddNodeToHead(2,&Head);             //'}' is added
+	        break;
+        }
+	    case -13:   //';' is expected
+	    {
+	        AddNodeToHead(4,&Head);             //';' is added
+	        break;
+	    }
+	    case -14:   //'id', 'constnum' or '(' are expected
+	    {
+            while (NumFromStack() != 4 && NumFromStack() != 15) //while ';' will not be find
+            {
+                DelToken(&Head);                //token "no_;" was deleted from Head
+	        }
+            while (HeadOfStack->n.token != NumFromStack())      //while ';' will not be find
+            {
+                DelNodeFromStack(&HeadOfStack); //token "no_;" was deleted from Head
+            }
+	        break;
+        }
+	    case -15:   //'if' is expected
+	    case -17:   //'for' is expected
+	    case -18:   //'while' is expected
+	    {
+	        while (NumFromStack() != 1)         //while '{' will not be find
+            {
+                if (NumFromStack() == 23)                            //'Л'
+                {
+                    while (HeadOfStack->n.token != 46)  //'#'
+                    {
+                        DelNodeFromStack(&HeadOfStack); //token "no_#" was deleted from Head
+                    }
+                    return 0;
+                }
+                DelToken(&Head);                //token "no_{" was deleted from Head
+	        }
+            while (HeadOfStack->n.token != 24)  //while 'Block' will not be find
+            {
+                DelNodeFromStack(&HeadOfStack); //token "no_{" was deleted from Head
+            }
+	        break;
+        }
+	    case -19:   //'main' is expected
+	    {
+	        //while '{' is not met
+	        while (NumFromStack() != 1 && Head != NULL)
+			{
+			    if (NumFromStack() == 23)                            //'Л'
+                {
+                    while (HeadOfStack->n.token != 46)  //'#'
+                    {
+                        DelNodeFromStack(&HeadOfStack); //token "no_#" was deleted from Head
+                    }
+                    return 0;
+                }
+				DelToken(&Head);            //token "no_main" was deleted from Head
+			}
+			AddNodeToHead(0,&Head);         //token "main" was added to Head (sequence of tokens)
+	        break;
+        }
+	    case -20:   //'type', 'id', 'cin', 'cout', 'if', 'for' , 'while' or '}'
+	    {
+	        int j = NumFromStack();
+	        //while 'type', 'id', 'cin', 'cout', 'if', 'for' , 'while' or '}' will not be find
+	        while (j!=5 && j!=3 && j!=9 && j!=11 && j!=13 && j!=17 && j!=18 && j!=2)
+            {
+                printf("%d\n",j);
+                if (j == 23)                            //'Л'
+                {
+                    while (HeadOfStack->n.token != 46)  //'#'
+                    {
+                        DelNodeFromStack(&HeadOfStack); //token "no_#" was deleted from Head
+                    }
+                    return 0;
+                }
+                DelToken(&Head);                //token *** was deleted from Head
+                j = NumFromStack();
+	        }
+	        //there is 'Sent' in HeadOfStack
+	        break;
+	    }
+	    case -21:   //'=' or ';' are expected
+	    {
+	        int j = NumFromStack();
+	        if (j==3 || j==6 || j==7 || j==14)  //id, conststr, constnum, (
+	        {
+	            AddNodeToHead(8,&Head);         //token '=' was added to Head
+	        }
+	        else
+	        {
+	            if (j==5 || j==3 || j==9 || j==11 || j==13 || j==17 || j==18 || j==2)
+	            {
+	                AddNodeToHead(4,&Head);     //tiken ';' was added to Head
+	            }
+	            else
+	            {
+	                while (NumFromStack() != 4 && NumFromStack() != 8)
+	                {
+	                    if (j == 23)                            //'Л'
+                        {
+                            while (HeadOfStack->n.token != 46)  //'#'
+                            {
+                                DelNodeFromStack(&HeadOfStack); //token "no_#" was deleted from Head
+                            }
+                            return 0;
+                        }
+	                    DelToken(&Head);
+	                    j = NumFromStack();
+	                }
+	            }
+	        }
+	        break;
+        }
+	    case -23:   //'constnum' is expected
+	    {
+	        AddNodeToHead(7,&Head);         //'constnum' is added
+	        break;
+        }
+	    case -24:   //'=' is expected
+	    {
+	        AddNodeToHead(8,&Head);         //'=' is added
+	        break;
+        }
+	    case -25:   //'>>' is expected
+	    {
+	        AddNodeToHead(10,&Head);         //'>>' is added
+	        break;
+	    }
+	    case -26:   //'<<' is expected
+	    {
+	        AddNodeToHead(12,&Head);         //'<<' is added
+	        break;
+        }
+	    case -27:   //'(' is expected
+	    {
+	        AddNodeToHead(14,&Head);         //'(' is added
+	        break;
+        }
+	    case -28:   //')' is expected
+	    {
+	        AddNodeToHead(15,&Head);         //')' is added
+	        break;
+	    }
+	    case -29:   //'else' is expected
+	    {
+	        AddNodeToHead(16,&Head);         //'else' is added
+	        break;
+        }
+	    case -30:   //'&&' or '||' are expected
+	    {
+	        AddNodeToHead(19,&Head);         //'compop' is added
+	        break;
+        }
+	    case -31:   //'==', '<=', '>=', '!=', '>' or '<' are expected
+	    {
+	        AddNodeToHead(20,&Head);         //'relop' is added
+	        break;
+        }
+	    case -32:   //'+' or '-' are expected
+	    {
+	        AddNodeToHead(21,&Head);         //'addop' is added
+	        break;
+        }
+	    case -33:   //'*' or '/' are expected
+	    {
+	        AddNodeToHead(22,&Head);         //'multop' is added
+	        break;
+        }
+	    case -34:   //the end of sequence is expected
+	    {
+	        while (NumFromStack() != 23)         //while 'Л' will not be find
+            {
+                if (Head == NULL)
+                {
+                    return 0;
+                }
+                DelToken(&Head);                //token "no_{" was deleted from Head
+	        }
+            while (HeadOfStack->n.token != 46)  //while 'Block' will not be find
+            {
+                DelNodeFromStack(&HeadOfStack); //token "no_{" was deleted from Head
+            }
+	        break;
+        }
 	}
-	else
-	{
-		if (i==-3||i==-5)
-		{
-			if (i==-3)
-			{
-				int j = NumFromStack();
-				//пропуск до else, type, id, cin, cout, if, for, while, { или ;
-				while (j!=16||j!=5||j!=3||j!=9||j!=11||j!=13||j!=17||j!=18||j!=1||j!=4)
-				{
-					DelToken(&Head);
-					DelNodeFromStack(&HeadOfStack);
-					j = NumFromStack();
-				}
-				return 0;
-			}
-			else
-			{
-				//пропуск до }
-				while (NumFromStack() != 2)
-				{
-					DelToken(&Head);
-					DelNodeFromStack(&HeadOfStack);
-				}
-				return 0;
-			}
-
-		}
-		else
-		{
-			//пропуск до {
-			while (NumFromStack() != 1)
-			{
-				DelToken(&Head);
-				DelNodeFromStack(&HeadOfStack);
-			}
-			return 0;
-		}
-	}
+	return 0;
 }
 
 //по потоку лексем строит цепочку правил
 int TableOfTokensToSeqOfRules (int i)
 {
-	if (i >= 0)
+    printf("\ni: %d", i);
+    if (i >= 0)
 	//нет ошибки
 	{
 		if (i == 0)
@@ -717,7 +1016,14 @@ int TableOfTokensToSeqOfRules (int i)
 	//ошибка
 	else
 	{
+	    printf("\ni: %d", i);
 		Error(i);
+		if (HeadOfStack -> n.token == 46)
+        {
+            return 0;
+        }
+        printf("\nTab[HeadOfStack -> n.token][Head -> n.token]: %d", Tab[HeadOfStack -> n.token][Head -> n.token]);
+		TableOfTokensToSeqOfRules(Tab[HeadOfStack -> n.token][Head -> n.token]);
 		return 1;
 	}
 }
@@ -1178,6 +1484,34 @@ int SA()
     //строим цепочку, начинаем с первой лексемы
     HeadSeqOfRule = NULL;
 	TableOfTokensToSeqOfRules(Tab[HeadOfStack -> n.token][Head -> n.token]);
+	printf("\nRule: ");
+    struct nodeToStack *p5=HeadSeqOfRule;
+	while(p5 != NULL)
+	{
+        printf("%d  ", p5->numOfRule);
+	    p5 = p5->next;
+    }
+
+	if (Errors != NULL)
+	{
+	    printf("\nErrors: ");
+	    struct error *p = Errors;
+	    while (p != NULL)
+	    {
+	        printf("%d  ", p->numOfError);
+	        p = p->next;
+	    }
+
+	    printf("\nRule: ");
+	    struct nodeToStack *p5=HeadSeqOfRule;
+	    while(p5 != NULL)
+	    {
+	        printf("%d  ", p5->numOfRule);
+	        p5 = p5->next;
+	    }
+
+	    return 1;
+	}
 
     // *** строим дерево            **
 	struct nodeToStack *p;
