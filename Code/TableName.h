@@ -3,12 +3,12 @@
 
 struct nodeName
 {
-	unsigned int n;
+    unsigned int n;
     char *name;
     unsigned int token;
     unsigned int numToken;
-	unsigned short kindToken;	//идентиф - 1 или ключевое слово - 0
-	struct nodeName *next, *prev;
+    unsigned short kindToken;	//РёРґРµРЅС‚РёС„ - 1 РёР»Рё РєР»СЋС‡РµРІРѕРµ СЃР»РѕРІРѕ - 0
+    struct nodeName *next, *prev;
 };
 
 void addName(struct nodeName **nameHead, unsigned int n, char *name,unsigned int token, unsigned int numToken, unsigned short kindToken)
@@ -81,7 +81,7 @@ struct nodeName* LookupTableName(struct nodeName *nameHead, char string[])
 struct nodeName* InsertTableName(struct nodeName **nameHead, unsigned int n, char *string)
 {
     addName(nameHead, n, string, 3, 28, 1);
-	return LookupTableName(*nameHead, string);
+    return LookupTableName(*nameHead, string);
 }
 
 void printTableName(struct nodeName *nameHead)
