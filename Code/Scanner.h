@@ -2,37 +2,37 @@
 #define SCANNER_H_INCLUDED
 
 //Константы
-const unsigned short max_length_id = 50;//ìàêñèìàëüíàÿ äëèíà èäåíòèôèêàòîðà
-const unsigned short max_length_num = 9;//	ìàêñèìàëüíàÿ äëèíà ÷èñëà
-const unsigned short max_length_string = 100;//ìàêñèìàëüíàÿ äëèíà ñòðîêè
-const unsigned short max_length_buf = 256;//ìàêñèìàëüíàÿ äëèíà áóôåðà
+const unsigned short max_length_id = 50;//максимальная длина идентификатора
+const unsigned short max_length_num = 9;//	максимальная длина числа
+const unsigned short max_length_string = 100;//максимальная длина строки
+const unsigned short max_length_buf = 256;//максимальная длина буфера
 
-//Ãëîáàëüíûå ïåðåìåííûå
-char *buf;    //áóôåð ñ ñ÷èòàííîé ñòðîêîé
-unsigned short numToken = 0; //íîìåð àòðèáóòà (îò 1 äî 39)
-struct nodeName* pointerName = NULL;    //óêàçàòåëü â òàáëèöó èìåí èëè êîíñòàíò
-struct nodeConst* pointerConst = NULL; //óêàçàòåëü â òàáëèöó êîíñòàíò
-unsigned int POS = 0;  //ïîçèöèÿ â áóôåðå
+//Глобальные переменные
+char *buf;    //буфер с считанной строкой
+unsigned short numToken = 0; //номер атрибута (от 1 до 39)
+struct nodeName* pointerName = NULL;    //указатель в таблицу имен или констант
+struct nodeConst* pointerConst = NULL; //указатель в таблицу констант
+unsigned int POS = 0;  //позиция в буфере
 unsigned int numOfString = 1;
-unsigned int position = 0;//ïîçèöèÿ â ñòðîêå
-unsigned short state = 0;//òåêóùåå ñîñòîÿíèå
-unsigned short start = 0;//íà÷àëüíîå ñîñòîÿíèå
-unsigned int numLex = 1;//ïîðÿäêîâûé íîìåð ëåêñåìû
-unsigned int counter = 0;//äëèíà áóôåðà
+unsigned int position = 0;//позиция в строке
+unsigned short state = 0;//текущее состояние
+unsigned short start = 0;//начальное состояние
+unsigned int numLex = 1;//порядковый номер лексемы
+unsigned int counter = 0;//длина буфера
 
-struct nodeName *nameHead;//óêàçàòåëü â òàáëèöó èìåí
+struct nodeName *nameHead;//указатель в таблицу имен
 struct nodeConst *constHead;
 struct nodeError *errorHead;
 
-//Ñòðóêòóðû
+//Структуры
 struct tokensFromScaner{
-	unsigned short token;      //íîìåð òîêåíà (îò 0 äî 23)
-	unsigned short numToken;   //íîìåð àòðèáóòà (îò 1 äî 39)
-	struct nodeName* pointerName;    //óêàçàòåëü â òàáëèöó èìåí èëè êîíñòàíò
-    struct nodeConst* pointerConst; //óêàçàòåëü â òàáëèöó êîíñòàíò
-	unsigned int numString;  //íîìåð ñòðîêè
-	unsigned int position; //ïîçèöèÿ â ñòðîêå(â áóôåðå)
-	unsigned int numLex; //ïîðÿäêîâûé íîìåð ëåêñåìû
+	unsigned short token;      //номер токена (от 0 до 23)
+	unsigned short numToken;   //номер атрибута (от 1 до 39)
+	struct nodeName* pointerName;    //указатель в таблицу имен или констант
+    struct nodeConst* pointerConst; //указатель в таблицу констант
+	unsigned int numString;  //номер строки
+	unsigned int position; //позиция в строке(в буфере)
+	unsigned int numLex; //порядковый номер лексемы
 };
 
 struct node
@@ -81,7 +81,7 @@ void printListTokens()
 		p = p->next;
 	}
 }
-unsigned short isLetter(char ch)     //ïðîâåðêà íà äîçâîëåííûå ñèìâîëû «A..Z», «a..z»
+unsigned short isLetter(char ch)     //проверка на дозволенные символы «A..Z», «a..z»
 {
 	if ((ch>='a' && ch<='z')||(ch>='A' && ch <= 'Z') ||(ch == '_'))
 		return 1;
@@ -89,7 +89,7 @@ unsigned short isLetter(char ch)     //ïðîâåðêà íà äîçâîëåíí�
 		return 0;
 }
 
-unsigned short isDigit(char ch)     //ïðîâåðêà «0..9»
+unsigned short isDigit(char ch)     //проверка «0..9»
 {
 	if (ch>='0' && ch<='9')
 		return 1;
@@ -155,8 +155,8 @@ int fail()
       case 28:  return 30;
       case 30:  return 34;
 	  case 31:  return 32;
-	  //case 32: error();break;//íåò çàêðûâàþùåé */
-	  //case 33: error();break;//íåò çàêðûâàþùåé */
+	  //case 32: error();break;//нет закрывающей */
+	  //case 33: error();break;//нет закрывающей */
 	  case 35:  return 36;
       case 36:  return 37;
       case 37:  return 38;
@@ -167,9 +167,9 @@ int fail()
       case 42:  return 43;
 	  case 43:  return 45;
       case 44:  return 45;
-      //case 45:  error();break;//ñèìâîë íå ðàñïîçíàí
+      //case 45:  error();break;//символ не распознан
 	  case 46:  return 47;
-	  //case 47:  error();break;//ñèìâîë íå ðàñïîçíàí
+	  //case 47:  error();break;//символ не распознан
 
   }
 }
@@ -211,7 +211,7 @@ int nexttoken()
           break;
   case 2: c = nextchar();
           if (c == '='){
-          numToken = 17;//ñèìâîë <=
+          numToken = 17;//символ <=
           return 20;
           }
           else
@@ -222,7 +222,7 @@ int nexttoken()
           break;
   case 3: c = nextchar();
           if (c == '<'){
-          numToken = 25;//ñèìâîë <<
+          numToken = 25;//символ <<
           return 12;
           }
           else
@@ -234,7 +234,7 @@ int nexttoken()
   case 4: c = nextchar();
 	      if ((c != '<')||(c != '=')){
 			  POS--;
-              numToken = 14;//ñèìâîë <
+              numToken = 14;//символ <
 			  return 20;
           }
 		  break;
@@ -250,7 +250,7 @@ int nexttoken()
           break;
   case 6: c = nextchar();
           if (c == '='){
-		  numToken = 18;//ñèìâîë ==
+		  numToken = 18;//символ ==
           return 20;
           }
           else
@@ -262,7 +262,7 @@ int nexttoken()
   case 7: c = nextchar();
           if (c != '='){
 		  POS--;
-		  numToken = 26;//ñèìâîë =
+		  numToken = 26;//символ =
           return 8;
           }
 		  break;
@@ -278,7 +278,7 @@ int nexttoken()
           break;
   case 9: c = nextchar();
           if (c == '>'){
-		  numToken = 24;//ñèìâîë >>
+		  numToken = 24;//символ >>
           return 10;
           }
           else
@@ -290,7 +290,7 @@ int nexttoken()
   case 10: c = nextchar();
           if (c == '='){
           numToken = 16;
-          return 20;//ñèìâîë >=
+          return 20;//символ >=
           }
           else
           {
@@ -302,7 +302,7 @@ int nexttoken()
           if ((c != '=')||(c !='>'))
 		  {
 			  POS--;
-			  numToken = 15;//ñèìâîë <
+			  numToken = 15;//символ <
 			  return 20;
 		  }
 		  break;
@@ -319,7 +319,7 @@ int nexttoken()
   case 13: c = nextchar();
           if (c == '='){
 		  numToken = 19;
-          return 20;//ñèìâîë !=
+          return 20;//символ !=
           }
           else
 		  {
@@ -331,7 +331,7 @@ int nexttoken()
 	       if(c != '='){
 			  POS--;
 		      numToken = 13;
-		      return 19;//ñèìâîë !
+		      return 19;//символ !
 	       }
 		   break;
    case 15:  c = nextchar();
@@ -366,7 +366,7 @@ int nexttoken()
 				   numToken = value->numToken;
 				   pointerName = value;
 				   return value->token;
-			   }; //èäåíòèôèêàòîð èëè êëþ÷åâîå ñëîâî
+			   }; //идентификатор или ключевое слово
 			}
 			break;
  case 17: c = nextchar();
@@ -407,7 +407,7 @@ int nexttoken()
 		  POS--;
 		  numToken = 8;
 		  pointerConst = InsertTableConstString(&constHead, num, str);
-          return 5;//öåëîå ÷èñëî
+          return 5;//целое число
           }
 		  break;
   case 21: c = nextchar();
@@ -430,7 +430,7 @@ int nexttoken()
 			  POS--;
               numToken = 9;
 			  pointerConst = InsertTableConstString(&constHead, num, str);
-			  return 5;//âåù ÷èñëî
+			  return 5;//вещ число
 		  }
 		  break;
   case 23: c = nextchar();
@@ -459,21 +459,21 @@ int nexttoken()
             if (c =='"'){
 			   pointerConst = InsertTableConstString(&constHead, num, str);
 			   numToken = 27;
-               return 6;//ñòðîêà
+               return 6;//строка
             }
 			else
 			{
 			  //start = state;
 			  //state = fail();
-			  InsertTableError(&errorHead, 6, 1, numOfString, POS);//îòñóòñòâóåò çàêðûâàþùàÿ "
-			  POS++;//êàê èñïðàâëÿòü??
+			  InsertTableError(&errorHead, 6, 1, numOfString, POS);//отсутствует закрывающая "
+			  POS++;//как исправлять??
 			  return -1;
 			}
 			break;
 	case 26: c = nextchar();
           if (c == '*'){
 		  numToken = 22;
-          return 22;//óìíîæåíèåå
+          return 22;//умножениее
           }
           else
 		  {
@@ -552,7 +552,7 @@ int nexttoken()
           if ((c != '/') || (c!='*')){
 		  POS--;
 		  numToken = 23;
-          return 22; //äåëåíèå
+          return 22; //деление
          }
 		 break;
  case 35: c = nextchar();
