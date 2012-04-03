@@ -3,12 +3,12 @@
 
 struct nodeConst
 {
-	unsigned int num ;	//длина строковой константы
-	char *str;	//строка
+	unsigned int num ;	//РґР»РёРЅР° СЃС‚СЂРѕРєРѕРІРѕР№ РєРѕРЅСЃС‚Р°РЅС‚С‹
+	char *str;	//СЃС‚СЂРѕРєР°
 	struct nodeConst *next;
 };
 
-struct nodeConst* InsertTableConstString(struct nodeConst **constHead, unsigned int n, char *str) //Функция добавляет в таблицу строковых и числовых констант, возвращает номер созданной записи в таблице
+struct nodeConst* InsertTableConstString(struct nodeConst **constHead, unsigned int n, char *str) //Р¤СѓРЅРєС†РёСЏ РґРѕР±Р°РІР»СЏРµС‚ РІ С‚Р°Р±Р»РёС†Сѓ СЃС‚СЂРѕРєРѕРІС‹С… Рё С‡РёСЃР»РѕРІС‹С… РєРѕРЅСЃС‚Р°РЅС‚, РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРјРµСЂ СЃРѕР·РґР°РЅРЅРѕР№ Р·Р°РїРёСЃРё РІ С‚Р°Р±Р»РёС†Рµ
 {
 	unsigned int i = 0;
 	struct nodeConst *p = (struct nodeConst*)malloc(sizeof(struct nodeConst));
