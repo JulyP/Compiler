@@ -29,72 +29,72 @@ struct tokensFromScaner{
 	unsigned short token;      //номер токена (от 0 до 23)
 	unsigned short numToken;   //номер атрибута (от 1 до 39)
 	struct nodeName* pointerName;    //указатель в таблицу имен
-    struct nodeConst* pointerConst; //указатель в таблицу констант
+	struct nodeConst* pointerConst; //указатель в таблицу констант
 	unsigned int numString;  //номер строки
 	unsigned int position; //позиция в строке(в буфере)
 	unsigned int numLex; //порядковый номер лексемы
 };
 
-struct node
-{
+struct node{
 	struct tokensFromScaner n;
 	struct node *next;
 };
+
 struct node *Head;
 
-void addElem(struct tokensFromScaner n)
-{
+void addElem(struct tokensFromScaner n){
 	struct node *p = (struct node*)malloc(sizeof(struct node));
 	struct node *p1 = Head;
-    p -> n = n;
+        p -> n = n;
 	p -> next = NULL;
-    if (Head == NULL)
+        if (Head == NULL){
 		Head = p;
-	else
-	{
-		while (p1 -> next  != NULL)
+	}
+	else{
+		while (p1 -> next  != NULL){
 			p1 = p1 -> next;
+		}
 		p1 -> next = p;
 	}
 }
 
-void freeList()
-{
+void freeList(){
 	struct node *p = NULL;
-    if (Head == NULL)
+    	if (Head == NULL){
 		return;
-	while (Head != NULL)
-	{
+	}
+	while (Head != NULL){
 		p = Head;
 		Head = p -> next;
-    	free(p);
+    		free(p);
 	}
 }
 
-void printListTokens()
-{
+void printListTokens(){
 	struct node *p = Head;
-	while(p != NULL)
-	{
+	while(p != NULL){
 
-		printf("%d %d %p %p %d %d %d \n", p->n.token, p->n.numToken, p->n.pointerName, p->n.pointerConst, p->n.numString, p->n.position, p->n.numLex);
+		printf("%d %d %p %p %d %d %d \n", p->n.token, p->n.numToken, p->n.pointerName, p->n.pointerConst, p->n.numString, p-	>n.position, p->n.numLex);
 		p = p->next;
 	}
 }
-unsigned short isLetter(char ch)     //проверка на дозволенные символы «A..Z», «a..z»
-{
-	if ((ch>='a' && ch<='z')||(ch>='A' && ch <= 'Z') ||(ch == '_'))
+
+unsigned short isLetter(char ch){     //проверка на дозволенные символы «A..Z», «a..z»
+	if ((ch>='a' && ch<='z')||(ch>='A' && ch <= 'Z') ||(ch == '_')){
 		return 1;
-	else
+	}
+	else{
 		return 0;
+	}
 }
 
-unsigned short isDigit(char ch)     //проверка «0..9»
-{
-	if (ch>='0' && ch<='9')
+unsigned short isDigit(char ch){     //проверка «0..9»
+	if (ch>='0' && ch<='9'){
 		return 1;
-	else
+	}
+	else{
 		return 0;
+	}
 }
 
 char nextchar(){
@@ -103,8 +103,7 @@ char nextchar(){
    return symbol;
 }
 
-void error (int error)
-{
+void error (int error){
 			switch(error){
 			case 0: InsertTableError(&errorHead, 0, 1, numOfString, POS);
 				    POS++;
@@ -727,15 +726,15 @@ void Scanner(){
 			tokens.numToken = numToken;
 			tokens.pointerName = pointerName;
 			tokens.pointerConst = pointerConst;
-	        tokens.numString = numOfString;
+	                tokens.numString = numOfString;
 			tokens.position = position;
 			tokens.numLex = numLex++;
-            addElem(tokens);
+                        addElem(tokens);
 			}
 			numOfString++;
 			POS = 0;
 			for (i = 0; i <= counter;i++)
-		         buf[i]='\0';
+		            buf[i]='\0';
 			counter = 0;
 		}
 	}
