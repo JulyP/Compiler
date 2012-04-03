@@ -10,7 +10,7 @@ const unsigned short max_length_buf = 256;//максимальная длина 
 //Глобальные переменные
 char *buf;    //буфер с считанной строкой
 unsigned short numToken = 0; //номер атрибута (от 1 до 39)
-struct nodeName* pointerName = NULL;    //указатель в таблицу имен или констант
+struct nodeName* pointerName = NULL;    //указатель в таблицу имен
 struct nodeConst* pointerConst = NULL; //указатель в таблицу констант
 unsigned int POS = 0;  //позиция в буфере
 unsigned int numOfString = 1;
@@ -28,7 +28,7 @@ struct nodeError *errorHead;
 struct tokensFromScaner{
 	unsigned short token;      //номер токена (от 0 до 23)
 	unsigned short numToken;   //номер атрибута (от 1 до 39)
-	struct nodeName* pointerName;    //указатель в таблицу имен или констант
+	struct nodeName* pointerName;    //указатель в таблицу имен
     struct nodeConst* pointerConst; //указатель в таблицу констант
 	unsigned int numString;  //номер строки
 	unsigned int position; //позиция в строке(в буфере)
