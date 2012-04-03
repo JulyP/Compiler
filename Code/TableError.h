@@ -1,16 +1,16 @@
 #ifndef TABLEERROR_H_INCLUDED
 #define TABLEERROR_H_INCLUDED
 
-struct nodeError			        //óçåë ñòåêà, â êîòîðîì õðàíÿòñÿ îøèáêè
+struct nodeError			        //ÑƒÐ·ÐµÐ» ÑÑ‚ÐµÐºÐ°, Ð² ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¼ Ñ…Ñ€Ð°Ð½ÑÑ‚ÑÑ Ð¾ÑˆÐ¸Ð±ÐºÐ¸
 {
-	int numOfError;	            //íîìåð îøèáêè
-	int typeOfError;	        //òèï îøèáêè (ëåêñè÷åñêàÿ, ñèíòàêñè÷åñêàÿ, ñåìàíòè÷åñêàÿ) 1 - ëåê 2 - ñèí 3 - ñåì
-	int numOfString;	        //íîìåð ñòðîêè, â êîòîðîé ïðîèçîøëà îøèáêà
-	int position;		        //ïîçèöèÿ îøèáêè (â êàêîé ïîçèöèè â ñòðîêå ïðîèçîøëà îøèáêà)
-	struct nodeError *next;         //óêàçàòåëü íà ñëåäóþùèé ýëåìåíò
+	int numOfError;	            //Ð½Ð¾Ð¼ÐµÑ€ Ð¾ÑˆÐ¸Ð±ÐºÐ¸
+	int typeOfError;	        //Ñ‚Ð¸Ð¿ Ð¾ÑˆÐ¸Ð±ÐºÐ¸ (Ð»ÐµÐºÑÐ¸Ñ‡ÐµÑÐºÐ°Ñ, ÑÐ¸Ð½Ñ‚Ð°ÐºÑÐ¸Ñ‡ÐµÑÐºÐ°Ñ, ÑÐµÐ¼Ð°Ð½Ñ‚Ð¸Ñ‡ÐµÑÐºÐ°Ñ) 1 - Ð»ÐµÐº 2 - ÑÐ¸Ð½ 3 - ÑÐµÐ¼
+	int numOfString;	        //Ð½Ð¾Ð¼ÐµÑ€ ÑÑ‚Ñ€Ð¾ÐºÐ¸, Ð² ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¹ Ð¿Ñ€Ð¾Ð¸Ð·Ð¾ÑˆÐ»Ð° Ð¾ÑˆÐ¸Ð±ÐºÐ°
+	int position;		        //Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ñ Ð¾ÑˆÐ¸Ð±ÐºÐ¸ (Ð² ÐºÐ°ÐºÐ¾Ð¹ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ð¸ Ð² ÑÑ‚Ñ€Ð¾ÐºÐµ Ð¿Ñ€Ð¾Ð¸Ð·Ð¾ÑˆÐ»Ð° Ð¾ÑˆÐ¸Ð±ÐºÐ°)
+	struct nodeError *next;         //ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ Ð½Ð° ÑÐ»ÐµÐ´ÑƒÑŽÑ‰Ð¸Ð¹ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚
 };
 
-void InsertTableError(struct nodeError **errorHead, int numOfError, int typeOfError, int numOfString,int position)//Ôóíêöèÿ äîáàâëÿåò â òàáëèöó îøèáîê çàïèñü, âîçâðàùàåò íîìåð ñîçäàííîé çàïèñè â òàáëèöå
+void InsertTableError(struct nodeError **errorHead, int numOfError, int typeOfError, int numOfString,int position)//Ð¤ÑƒÐ½ÐºÑ†Ð¸Ñ Ð´Ð¾Ð±Ð°Ð²Ð»ÑÐµÑ‚ Ð² Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñƒ Ð¾ÑˆÐ¸Ð±Ð¾Ðº Ð·Ð°Ð¿Ð¸ÑÑŒ, Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð½Ð¾Ð¼ÐµÑ€ ÑÐ¾Ð·Ð´Ð°Ð½Ð½Ð¾Ð¹ Ð·Ð°Ð¿Ð¸ÑÐ¸ Ð² Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ðµ
 {
 	struct nodeError *p = (struct nodeError*)malloc(sizeof(struct nodeError));
 	struct nodeError *p1 = *errorHead;
@@ -36,19 +36,19 @@ void printTableError(struct nodeError *errorHead)
 		if(p->typeOfError == 1)
 		{
 			switch(p->numOfError){
-			case 0: printf("Ìàêñèìàëüíàÿ äëèíà èäåíòèôèêàòîðà áîëüøå 50 ñèìâîëîâ. Ñòðîêà %d ïîçèöèÿ %d \n", p->numOfString, p->position);
+			case 0: printf("ÐœÐ°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½Ð°Ñ Ð´Ð»Ð¸Ð½Ð° Ð¸Ð´ÐµÐ½Ñ‚Ð¸Ñ„Ð¸ÐºÐ°Ñ‚Ð¾Ñ€Ð° Ð±Ð¾Ð»ÑŒÑˆÐµ 50 ÑÐ¸Ð¼Ð²Ð¾Ð»Ð¾Ð². Ð¡Ñ‚Ñ€Ð¾ÐºÐ° %d Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ñ %d \n", p->numOfString, p->position);
 			        break;
-			case 1: printf("Ìàêñèìàëüíàÿ äëèíà ÷èñëà áîëüøå 9 ñèìâîëîâ. Ñòðîêà %d ïîçèöèÿ %d \n", p->numOfString, p->position);
+			case 1: printf("ÐœÐ°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½Ð°Ñ Ð´Ð»Ð¸Ð½Ð° Ñ‡Ð¸ÑÐ»Ð° Ð±Ð¾Ð»ÑŒÑˆÐµ 9 ÑÐ¸Ð¼Ð²Ð¾Ð»Ð¾Ð². Ð¡Ñ‚Ñ€Ð¾ÐºÐ° %d Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ñ %d \n", p->numOfString, p->position);
 				    break;
-			case 2: printf("Ïðîïóñê ñèìâîëîâ çàêðûâàþùèõ êîììåíòàðèé */. Ñòðîêà %d ïîçèöèÿ %d \n", p->numOfString, p->position);
+			case 2: printf("ÐŸÑ€Ð¾Ð¿ÑƒÑÐº ÑÐ¸Ð¼Ð²Ð¾Ð»Ð¾Ð² Ð·Ð°ÐºÑ€Ñ‹Ð²Ð°ÑŽÑ‰Ð¸Ñ… ÐºÐ¾Ð¼Ð¼ÐµÐ½Ñ‚Ð°Ñ€Ð¸Ð¹ */. Ð¡Ñ‚Ñ€Ð¾ÐºÐ° %d Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ñ %d \n", p->numOfString, p->position);
 				    break;
-			case 3: printf("Ìàêñèìàëüíàÿ äëèíà áóôåðà áîëüøå 256 ñèìâîëîâ \n");
+			case 3: printf("ÐœÐ°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½Ð°Ñ Ð´Ð»Ð¸Ð½Ð° Ð±ÑƒÑ„ÐµÑ€Ð° Ð±Ð¾Ð»ÑŒÑˆÐµ 256 ÑÐ¸Ð¼Ð²Ð¾Ð»Ð¾Ð² \n");
 				    break;
-			case 4: printf("Íåèçâåñòíûé ñèìâîë. Ñòðîêà %d ïîçèöèÿ %d \n", p->numOfString, p->position);
+			case 4: printf("ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ñ‹Ð¹ ÑÐ¸Ð¼Ð²Ð¾Ð». Ð¡Ñ‚Ñ€Ð¾ÐºÐ° %d Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ñ %d \n", p->numOfString, p->position);
 				    break;
-			case 5: printf("Íåïðàâèëüíàÿ çàïèñü ÷èñëà, ïîñëå òî÷êè íå öèôðà. Ñòðîêà %d ïîçèöèÿ %d \n", p->numOfString, p->position);
+			case 5: printf("ÐÐµÐ¿Ñ€Ð°Ð²Ð¸Ð»ÑŒÐ½Ð°Ñ Ð·Ð°Ð¿Ð¸ÑÑŒ Ñ‡Ð¸ÑÐ»Ð°, Ð¿Ð¾ÑÐ»Ðµ Ñ‚Ð¾Ñ‡ÐºÐ¸ Ð½Ðµ Ñ†Ð¸Ñ„Ñ€Ð°. Ð¡Ñ‚Ñ€Ð¾ÐºÐ° %d Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ñ %d \n", p->numOfString, p->position);
 				    break;
-			case 6: printf("Ïðîïóñê ñèìâîëà çàêðûâàþùåé êàâû÷êè. Ñòðîêà %d ïîçèöèÿ %d \n", p->numOfString, p->position);
+			case 6: printf("ÐŸÑ€Ð¾Ð¿ÑƒÑÐº ÑÐ¸Ð¼Ð²Ð¾Ð»Ð° Ð·Ð°ÐºÑ€Ñ‹Ð²Ð°ÑŽÑ‰ÐµÐ¹ ÐºÐ°Ð²Ñ‹Ñ‡ÐºÐ¸. Ð¡Ñ‚Ñ€Ð¾ÐºÐ° %d Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ñ %d \n", p->numOfString, p->position);
 				    break;
 			}
 		}
