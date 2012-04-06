@@ -16,7 +16,7 @@ struct nodeError			        //узел стека, в котором хранят
 	int numOfString;	        //номер строки, в которой произошла ошибка
 	int position;		        //позиция ошибки (в какой позиции в строке произошла ошибка)
 	struct nodeError* next;         //указатель на следующий элемент
-}*errorHead = NULL;			    //указатель на стек ошибок
+}*errorHead;			    //указатель на стек ошибок
 
 //ИЗ ЛЕКСИЧЕСКОГО АНАЛИЗАТОРА
 struct tokensFromScaner
@@ -59,6 +59,7 @@ struct nodeConst *constHead;
 //ИЗ СИТАНКСИЧЕСКОГО АНАЛИЗАТОРА
 struct nodeTree	                //узел дерева
 {
+    struct Table_Id *type;
 	struct tokensFromScaner n;  //лексема со всеми её атрибутами
 	struct nodeTree *alpha[4];	//массив указателей на другие узлы дерева
 };

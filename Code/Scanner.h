@@ -406,7 +406,7 @@ int nexttoken()
 		  POS--;
 		  numToken = 8;
 		  pointerConst = InsertTableConstString(&constHead, num, str);
-          return 5;//целое число
+          return 7;//целое число *** исправила юля п
           }
 		  break;
   case 21: c = nextchar();
@@ -429,7 +429,7 @@ int nexttoken()
 			  POS--;
               numToken = 9;
 			  pointerConst = InsertTableConstString(&constHead, num, str);
-			  return 5;//вещ число
+			  return 7;//вещ число  ***исправила юля п
 		  }
 		  break;
   case 23: c = nextchar();

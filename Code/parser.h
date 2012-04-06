@@ -61,6 +61,7 @@ int AddNodeToSeqOfRules(struct nodeToStack **pp, int rule, struct tokensFromScan
     struct nodeToStack *p1, *p = (struct nodeToStack*)malloc(sizeof(struct nodeToStack));
     p -> numOfRule = rule;
     p -> n = token;
+    p -> n.numString = token.numString;
     p -> next = NULL;
     p1 = (*pp);
     if (p1 != NULL)
@@ -83,6 +84,7 @@ int AddNodeToStack (struct nodeToStack **pp, int N_or_t)
 {
     struct nodeToStack *p = (struct nodeToStack*)malloc(sizeof(struct nodeToStack));
     p -> numOfRule = 0;
+    p -> n = Head->n;
     p -> n.token = N_or_t;
     //printf("%d ", N_or_t);
     p -> next = (*pp);
@@ -94,6 +96,7 @@ int AddNodeToStack (struct nodeToStack **pp, int N_or_t)
 struct nodeTree *addNodeToTree(struct nodeTree **p, struct nodeToStack *p1, int neterminal, int j)
 {
 	struct nodeTree *p2 = (struct nodeTree*)malloc(sizeof(struct nodeTree));
+	p2->type = NULL;
 	int k = 0;
 	for (k = 0; k < 4; k++)
 	{
@@ -243,7 +246,7 @@ int Table()
 	Tab[43][21] = 134;
 	Tab[43][23] = 135;
 	//44
-	Tab[44][3] = 121;
+	Tab[44][3] = 141;
 	Tab[44][7] = 140;
 	Tab[44][14] = 139;
 	//45
@@ -808,10 +811,10 @@ int TableOfTokensToSeqOfRules (int i)
                     // OpOut -> cout  Expr FuncOut ;
                     DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину OpOut
                     AddNodeToStack(&HeadOfStack, 4);		//добавляем в стек вершину ;
-                    AddNodeToStack(&HeadOfStack, 3);		//добавляем в стек вершину FuncOut
-                    AddNodeToStack(&HeadOfStack, 10);		//добавляем в стек вершину Expr
+                    AddNodeToStack(&HeadOfStack, 36);		//добавляем в стек вершину FuncOut
+                    AddNodeToStack(&HeadOfStack, 34);		//добавляем в стек вершину Expr
                     AddNodeToStack(&HeadOfStack, 12);		//добавляем в стек вершину <<
-                    AddNodeToStack(&HeadOfStack, 9);		//добавляем в стек вершину cout
+                    AddNodeToStack(&HeadOfStack, 11);		//добавляем в стек вершину cout
                     break;
                 }
                 case 119:
@@ -1441,25 +1444,24 @@ int BuildingOfTree (struct nodeTree **p, struct nodeToStack *p1)
 // Синтаксический анализатор
 int SA()
 {
-    //копируем поток лексем
-    printf("\n\n1\n\n");
+    //*** копируем поток лексем
     struct node *p1 = Head, *p2;
     struct node *p3 = (struct node*)malloc(sizeof(struct node));
     while (p1->next != NULL)
     {
         p1 = p1 -> next;
     }
+    //добавляем в конец пустой символ
     p3->n.token=23;
 	p3->n.numToken=50;
 	p3->n.numLex = 0;
 	p3->next=NULL;
 	p1->next=p3;
-printf("\n\n1\n\n");
+
     p1 = Head;
     p3 = (struct node*)malloc(sizeof(struct node));
     p3 -> n = p1 -> n;
     p3 -> next = NULL;
-    //p3 -> prev = NULL;
     Head1 = p3;
     p2 = Head1;
     p1 = p1 -> next;
@@ -1468,7 +1470,6 @@ printf("\n\n1\n\n");
         struct node *p3 = (struct node*)malloc(sizeof(struct node));
         p3 -> n = p1 -> n;
         p3 -> next = NULL;
-        //p3 -> prev = NULL;
         p2 -> next = p3;
         p2 = p2 -> next;
         p1 = p1 -> next;
@@ -1485,17 +1486,10 @@ printf("\n\n1\n\n");
     //строим цепочку, начинаем с первой лексемы
     HeadSeqOfRule = NULL;
 	TableOfTokensToSeqOfRules(Tab[HeadOfStack -> n.token][Head -> n.token]);
-/*	printf("\nRule: ");
-    struct nodeToStack *p5=HeadSeqOfRule;
-	while(p5 != NULL)
-	{
-        printf("%d  ", p5->numOfRule);
-	    p5 = p5->next;
-    }
-*/
+
+    //если ошибка, заканчиваем разбор
 	if (errorHead != NULL)
 	{
-	    //процедура которая печататет сообщения об ошибках
 	    return 1;
 	}
 
@@ -1508,7 +1502,8 @@ printf("\n\n1\n\n");
 
 	if (HeadSeqOfRule != NULL)
 	{
-	    printf("\n\n%d\n\n", HeadSeqOfRule->numOfRule);
+	//    printf("\n\n%d\n\n", HeadSeqOfRule->numOfRule);
+	    free(Head);
 	}
 	return 0;
 }

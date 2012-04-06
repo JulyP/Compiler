@@ -2,7 +2,7 @@ main
 {
 int a = 0;
 int b = 0;
-float sum = 0.p0;
+float sum = 0.0;
 cin >> a;
 cin >> b;
 sum = a + b;
