@@ -257,23 +257,23 @@ int Table()
 	return 0;
 }
 
-//are adding node to Errors (seq. of error)
+//are adding node to errorHead (seq. of error)
 int addSinError(int i)
 {
-    struct error *p1, *p = (struct error*)malloc(sizeof(struct error));
+    struct nodeError *p1, *p = (struct nodeError*)malloc(sizeof(struct nodeError));
     p -> numOfError = i;
-    p -> typeOFError = 2;
+    p -> typeOfError = 2;
     p -> numOfString = HeadOfStack->n.numString;
     p -> position = HeadOfStack->n.position;
     p -> next = NULL;
 
-    if (Errors == NULL)
+    if (errorHead == NULL)
     {
-        Errors = p;
+        errorHead = p;
     }
     else
     {
-        p1 = Errors;
+        p1 = errorHead;
         while (p1 -> next != NULL)
         {
             p1 = p1 -> next;
@@ -289,7 +289,7 @@ int AddNodeToHead(int i, struct node **p)
     struct node *p1 = (struct node*)malloc(sizeof(struct node));
     p1 -> n.token = i;
     p1 -> next = (*p);
-    (*p) -> prev = p1;
+    //(*p) -> prev = p1;
     (*p) = p1;
     return 0;
 }
@@ -298,7 +298,7 @@ int AddNodeToHead(int i, struct node **p)
 int Error (int i)
 {
 	addSinError (i);
-	printf("\n\nerror  %d\n\n",i);
+	//printf("\n\nerror  %d\n\n",i);
 	switch (i)
 	{
 	    case -1:    //'type' is expected
@@ -395,13 +395,13 @@ int Error (int i)
 	    {
 	        while (NumFromStack() != 4)         //while ';' will not be find
             {
-                printf("tok: %d   ", NumFromStack());
+                //printf("tok: %d   ", NumFromStack());
                 if (NumFromStack() == 23)                    //'Л'
                 {
                     while (HeadOfStack->n.token != 46)  //'#'
                     {
                         DelNodeFromStack(&HeadOfStack); //token "no_#" was deleted from Head
-                        printf("Stack: %d   ", HeadOfStack->n.token);
+                        //printf("Stack: %d   ", HeadOfStack->n.token);
                     }
                     return 0;
                 }
@@ -638,7 +638,7 @@ int Error (int i)
 //по потоку лексем строит цепочку правил
 int TableOfTokensToSeqOfRules (int i)
 {
-    printf("\ni: %d", i);
+    //printf("\ni: %d", i);
     if (i >= 0)
 	//нет ошибки
 	{
@@ -1016,13 +1016,13 @@ int TableOfTokensToSeqOfRules (int i)
 	//ошибка
 	else
 	{
-	    printf("\ni: %d", i);
+	    //printf("\ni: %d", i);
 		Error(i);
 		if (HeadOfStack -> n.token == 46)
         {
             return 0;
         }
-        printf("\nTab[HeadOfStack -> n.token][Head -> n.token]: %d", Tab[HeadOfStack -> n.token][Head -> n.token]);
+        //printf("\nTab[HeadOfStack -> n.token][Head -> n.token]: %d", Tab[HeadOfStack -> n.token][Head -> n.token]);
 		TableOfTokensToSeqOfRules(Tab[HeadOfStack -> n.token][Head -> n.token]);
 		return 1;
 	}
@@ -1174,7 +1174,7 @@ int BuildingOfTree (struct nodeTree **p, struct nodeToStack *p1)
         case 111:
 		{
 			addNodeToTree(&(*p),p1,5,0);                    //add type
-			addNodeToTree(&(*p),returnToken(p1->n.number),3,1); //add id
+			addNodeToTree(&(*p),returnToken(p1->n.numLex),3,1); //add id
 			newP = addNodeToTree(&(*p),p1,33,2);            //add EquExpr
 			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
 			BuildingOfTree (&newP,fromHead);                //build tree from EquExpr
@@ -1346,7 +1346,7 @@ int BuildingOfTree (struct nodeTree **p, struct nodeToStack *p1)
         case 131:
 		{
 		    addNodeToTree(&(*p),p1,3,0);                    //add id
-			addNodeToTree(&(*p),returnToken(p1->n.number),20,1);    //add relop
+			addNodeToTree(&(*p),returnToken(p1->n.numLex),20,1);    //add relop
 			newP = addNodeToTree(&(*p),p1,35,2);            //add ArExpr
 			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
 			BuildingOfTree (&newP,fromHead);                //build tree from ArExpr
@@ -1355,7 +1355,7 @@ int BuildingOfTree (struct nodeTree **p, struct nodeToStack *p1)
         case 132:
 		{
 		    addNodeToTree(&(*p),p1,7,0);                    //add constnum
-			addNodeToTree(&(*p),returnToken(p1->n.number),20,1);    //add relop
+			addNodeToTree(&(*p),returnToken(p1->n.numLex),20,1);    //add relop
 			newP = addNodeToTree(&(*p),p1,35,2);            //add ArExpr
 			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
 			BuildingOfTree (&newP,fromHead);                //build tree from ArExpr
@@ -1450,7 +1450,7 @@ int SA()
     }
     p3->n.token=23;
 	p3->n.numToken=50;
-	p3->n.number = 0;
+	p3->n.numLex = 0;
 	p3->next=NULL;
 	p1->next=p3;
 
@@ -1458,7 +1458,7 @@ int SA()
     p3 = (struct node*)malloc(sizeof(struct node));
     p3 -> n = p1 -> n;
     p3 -> next = NULL;
-    p3 -> prev = NULL;
+    //p3 -> prev = NULL;
     Head1 = p3;
     p2 = Head1;
     p1 = p1 -> next;
@@ -1467,7 +1467,7 @@ int SA()
         struct node *p3 = (struct node*)malloc(sizeof(struct node));
         p3 -> n = p1 -> n;
         p3 -> next = NULL;
-        p3 -> prev = NULL;
+        //p3 -> prev = NULL;
         p2 -> next = p3;
         p2 = p2 -> next;
         p1 = p1 -> next;
@@ -1484,32 +1484,17 @@ int SA()
     //строим цепочку, начинаем с первой лексемы
     HeadSeqOfRule = NULL;
 	TableOfTokensToSeqOfRules(Tab[HeadOfStack -> n.token][Head -> n.token]);
-	printf("\nRule: ");
+/*	printf("\nRule: ");
     struct nodeToStack *p5=HeadSeqOfRule;
 	while(p5 != NULL)
 	{
         printf("%d  ", p5->numOfRule);
 	    p5 = p5->next;
     }
-
-	if (Errors != NULL)
+*/
+	if (errorHead != NULL)
 	{
-	    printf("\nErrors: ");
-	    struct error *p = Errors;
-	    while (p != NULL)
-	    {
-	        printf("%d  ", p->numOfError);
-	        p = p->next;
-	    }
-
-	    printf("\nRule: ");
-	    struct nodeToStack *p5=HeadSeqOfRule;
-	    while(p5 != NULL)
-	    {
-	        printf("%d  ", p5->numOfRule);
-	        p5 = p5->next;
-	    }
-
+	    //процедура которая печататет сообщения об ошибках
 	    return 1;
 	}
 

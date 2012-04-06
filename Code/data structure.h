@@ -9,25 +9,25 @@ const int max_amount_print = 5;		//максимальное количество
 const int max_amount_podblocs = 20;	//максимальное количество вложенных подблоков первого уровня в один блок
 
 //ОБЩИЕ ОШИБКИ
-struct error			        //узел стека, в котором хранятся ошибки
+struct nodeError			        //узел стека, в котором хранятся ошибки
 {
-	int numOfError;	                //номер ошибки
-	int typeOFError;	        //тип ошибки (лексическая, синтаксическая, семантическая) 1 - лек 2 - син 3 - сем
+	int numOfError;	            //номер ошибки
+	int typeOfError;	        //тип ошибки (лексическая, синтаксическая, семантическая) 1 - лек 2 - син 3 - сем
 	int numOfString;	        //номер строки, в которой произошла ошибка
 	int position;		        //позиция ошибки (в какой позиции в строке произошла ошибка)
-	struct error* next;             //указатель на следующий элемент
-}*Errors = NULL;		        //указатель на стек ошибок
-
+	struct nodeError* next;         //указатель на следующий элемент
+}*errorHead = NULL;			    //указатель на стек ошибок
 
 //ИЗ ЛЕКСИЧЕСКОГО АНАЛИЗАТОРА
-struct tokensFromScaner{
-	unsigned short token;      //номер токена (от 0 до 23)
-	unsigned short numToken;   //номер атрибута (от 1 до 39)
-	struct nodeName* pointerName;    //указатель в таблицу имен
-        struct nodeConst* pointerConst; //указатель в таблицу констант
-	unsigned int numString;  //номер строки
-	unsigned int position; //позиция в строке(в буфере)
-	unsigned int numLex; //порядковый номер лексемы
+struct tokensFromScaner
+{
+	unsigned short token;               //номер токена (от 0 до 23)
+	unsigned short numToken;            //номер атрибута (от 1 до 39)
+	struct nodeName* pointerName;       //указатель в таблицу имен
+    struct nodeConst* pointerConst;     //указатель в таблицу констант
+	unsigned int numString;             //номер строки
+	unsigned int position;              //позиция в строке(в буфере)
+	unsigned int numLex;                //порядковый номер лексемы
 };
 
 struct node
@@ -35,21 +35,20 @@ struct node
 	struct tokensFromScaner n;
 	struct node *next;
 };
-
 struct node *Head;
 
 struct nodeName
 {
 	unsigned int n; //количество символов в name
-        char *name; //название ключевого слова или идентификатора
-        unsigned int token; //номер токена (от 0 до 23)
-        unsigned int numToken; //номер атрибута (от 1 до 39)
+    char *name; //название ключевого слова или идентификатора
+    unsigned int token; //номер токена (от 0 до 23)
+    unsigned int numToken; //номер атрибута (от 1 до 39)
 	unsigned short kindToken;	//идентиф - 1 или ключевое слово - 0
 	struct nodeName *next, *prev;
 };
 struct nodeName *nameHead;
 
-struct nodeConst	
+struct nodeConst
 {
 	int num ;	//длина строковой константы
 	char *str;	//строка
