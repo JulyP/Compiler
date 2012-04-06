@@ -25,7 +25,7 @@ struct nodeConst *constHead;
 struct nodeError *errorHead;
 
 //Структуры
-struct tokensFromScaner{
+/*struct tokensFromScaner{
 	unsigned short token;      //номер токена (от 0 до 23)
 	unsigned short numToken;   //номер атрибута (от 1 до 39)
 	struct nodeName* pointerName;    //указатель в таблицу имен
@@ -41,7 +41,7 @@ struct node{
 };
 
 struct node *Head;
-
+*/
 void addElem(struct tokensFromScaner n){
 	struct node *p = (struct node*)malloc(sizeof(struct node));
 	struct node *p1 = Head;
@@ -74,7 +74,7 @@ void printListTokens(){
 	struct node *p = Head;
 	while(p != NULL){
 
-		printf("%d %d %p %p %d %d %d \n", p->n.token, p->n.numToken, p->n.pointerName, p->n.pointerConst, p->n.numString, p-	>n.position, p->n.numLex);
+		printf("%d %d %p %p %d %d %d \n", p->n.token, p->n.numToken, p->n.pointerName, p->n.pointerConst, p->n.numString, p->n.position, p->n.numLex);
 		p = p->next;
 	}
 }

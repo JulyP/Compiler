@@ -1,7 +1,7 @@
 #ifndef TABLEERROR_H_INCLUDED
 #define TABLEERROR_H_INCLUDED
 
-struct nodeError			        //узел стека, в котором хранятся ошибки
+/*struct nodeError			        //узел стека, в котором хранятся ошибки
 {
 	int numOfError;	            //номер ошибки
 	int typeOfError;	        //тип ошибки (лексическая, синтаксическая, семантическая) 1 - лек 2 - син 3 - сем
@@ -9,7 +9,7 @@ struct nodeError			        //узел стека, в котором хранят
 	int position;		        //позиция ошибки (в какой позиции в строке произошла ошибка)
 	struct nodeError *next;         //указатель на следующий элемент
 };
-
+*/
 void InsertTableError(struct nodeError **errorHead, int numOfError, int typeOfError, int numOfString,int position)//Функция добавляет в таблицу ошибок запись, возвращает номер созданной записи в таблице
 {
 	struct nodeError *p = (struct nodeError*)malloc(sizeof(struct nodeError));

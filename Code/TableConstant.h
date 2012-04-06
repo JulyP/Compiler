@@ -1,13 +1,13 @@
 #ifndef TABLECONSTANT_H_INCLUDED
 #define TABLECONSTANT_H_INCLUDED
 
-struct nodeConst
+/*struct nodeConst
 {
 	unsigned int num ;	//длина строковой константы
 	char *str;	//строка
 	struct nodeConst *next;
 };
-
+*/
 struct nodeConst* InsertTableConstString(struct nodeConst **constHead, unsigned int n, char *str) //Функция добавляет в таблицу строковых и числовых констант, возвращает номер созданной записи в таблице
 {
 	unsigned int i = 0;

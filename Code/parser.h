@@ -1442,6 +1442,7 @@ int BuildingOfTree (struct nodeTree **p, struct nodeToStack *p1)
 int SA()
 {
     //копируем поток лексем
+    printf("\n\n1\n\n");
     struct node *p1 = Head, *p2;
     struct node *p3 = (struct node*)malloc(sizeof(struct node));
     while (p1->next != NULL)
@@ -1453,7 +1454,7 @@ int SA()
 	p3->n.numLex = 0;
 	p3->next=NULL;
 	p1->next=p3;
-
+printf("\n\n1\n\n");
     p1 = Head;
     p3 = (struct node*)malloc(sizeof(struct node));
     p3 -> n = p1 -> n;

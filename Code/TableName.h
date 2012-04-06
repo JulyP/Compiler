@@ -1,7 +1,7 @@
 #ifndef TABLENAME_H_INCLUDED
 #define TABLENAME_H_INCLUDED
 
-struct nodeName
+/*struct nodeName
 {
     unsigned int n;
     char *name;
@@ -10,7 +10,7 @@ struct nodeName
     unsigned short kindToken;	//идентиф - 1 или ключевое слово - 0
     struct nodeName *next, *prev;
 };
-
+*/
 void addName(struct nodeName **nameHead, unsigned int n, char *name,unsigned int token, unsigned int numToken, unsigned short kindToken)
 {
     int i = 0;
