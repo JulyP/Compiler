@@ -229,6 +229,7 @@ int Table()
 	Tab[39][7] = 130;
 	Tab[39][14] = 129;
 	//40
+	Tab[40][4] = 128;
 	Tab[40][15] = 128;
 	Tab[40][19] = 127;
 	Tab[40][23] = 128;
@@ -575,12 +576,34 @@ int Error (int i)
         }
 	    case -25:   //'>>' is expected
 	    {
-	        AddNodeToHead(10,&Head);         //'>>' is added
+	        if (Head->n.token == 12)
+	        {
+	            DelToken(&Head);
+	        }
+	        if (Head->n.token != 10)
+	        {
+                AddNodeToHead(10,&Head);         //'>>' is added
+	        }
+	        else
+	        {
+	            DelNodeFromStack(&HeadOfStack);
+	        }
 	        break;
 	    }
 	    case -26:   //'<<' is expected
 	    {
-	        AddNodeToHead(12,&Head);         //'<<' is added
+	        if (Head->n.token == 10)
+	        {
+	            DelToken(&Head);
+	        }
+	        if (Head->n.token != 12)
+	        {
+                AddNodeToHead(12,&Head);         //'<<' is added
+	        }
+	        else
+	        {
+	            DelNodeFromStack(&HeadOfStack);
+	        }
 	        break;
         }
 	    case -27:   //'(' is expected
@@ -808,7 +831,7 @@ int TableOfTokensToSeqOfRules (int i)
                 }
                 case 118:
                 {
-                    // OpOut -> cout  Expr FuncOut ;
+                    // OpOut -> cout << Expr FuncOut ;
                     DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину OpOut
                     AddNodeToStack(&HeadOfStack, 4);		//добавляем в стек вершину ;
                     AddNodeToStack(&HeadOfStack, 36);		//добавляем в стек вершину FuncOut
@@ -864,11 +887,11 @@ int TableOfTokensToSeqOfRules (int i)
                     DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину OpFor
                     AddNodeToStack(&HeadOfStack, 24);		//добавляем в стек вершину Block
                     AddNodeToStack(&HeadOfStack, 15);		//добавляем в стек вершину )
-                    AddNodeToStack(&HeadOfStack, 35);		//добавляем в стек вершину ArExpr
+                    AddNodeToStack(&HeadOfStack, 27);		//добавляем в стек вершину ArExpr
                     AddNodeToStack(&HeadOfStack, 4);		//добавляем в стек вершину ;
                     AddNodeToStack(&HeadOfStack, 37);		//добавляем в стек вершину CondExpr
-                    AddNodeToStack(&HeadOfStack, 4);		//добавляем в стек вершину ;
-                    AddNodeToStack(&HeadOfStack, 27);		//добавляем в стек вершину OpEqu
+                    //AddNodeToStack(&HeadOfStack, 4);		//добавляем в стек вершину ;
+                    AddNodeToStack(&HeadOfStack, 26);		//добавляем в стек вершину OpEqu
                     AddNodeToStack(&HeadOfStack, 14);		//добавляем в стек вершину (
                     AddNodeToStack(&HeadOfStack, 17);		//добавляем в стек вершину for
                     break;
@@ -1025,6 +1048,8 @@ int TableOfTokensToSeqOfRules (int i)
         {
             return 0;
         }
+        //printf("\nHeadOfStack -> n.token = %d", HeadOfStack -> n.token);
+        //printf("\nHead -> n.token = %d", Head -> n.token);
         //printf("\nTab[HeadOfStack -> n.token][Head -> n.token]: %d", Tab[HeadOfStack -> n.token][Head -> n.token]);
 		TableOfTokensToSeqOfRules(Tab[HeadOfStack -> n.token][Head -> n.token]);
 		return 1;

@@ -171,7 +171,7 @@ int PrintErrors()
                     }
                     case 11:
                     {
-                        printf("Ожидается '*', '//' или ')'.");
+                        printf("Ожидается '*', '/' или ')'.");
                         break;
                     }
                     case 12:
@@ -281,7 +281,7 @@ int PrintErrors()
                     }
                     case 33:
                     {
-                        printf("Ожидается '*' или '//'.");
+                        printf("Ожидается '*' или '/'.");
                         break;
                     }
                     case 34:
@@ -290,7 +290,7 @@ int PrintErrors()
                         break;
                     }
                 }
-                printf(" Строка %d позиция %d\n", p->numOfString, p->position);
+                printf("Err: %d Строка %d позиция %d\n",p->numOfError, p->numOfString, p->position);
                 p = p->next;
             }
             break;

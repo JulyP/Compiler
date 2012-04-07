@@ -20,7 +20,7 @@ int main()
         PrintErrors();
         return 0;
     }
-
+    printf("\n\n&&&&\n");
     //sint analizator
     SA();
 
