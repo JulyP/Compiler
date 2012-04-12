@@ -7,7 +7,7 @@
 #include "TableError.h"
 #include "Scanner.h"
 #include "parser.h"
-
+#include "Semantic_analizer.h"
 
 int main()
 {
@@ -20,7 +20,7 @@ int main()
         PrintErrors();
         return 0;
     }
-    printf("\n\n&&&&\n");
+
     //sint analizator
     SA();
 
