@@ -6,7 +6,8 @@ const int max_amount_id = 250;		//максимальное количество 
 const int max_amount_skobka = 10;	//максимальная вложенность скобок
 const int max_level_blocks = 8;		//максимальная вложенность блоков
 const int max_amount_print = 5;		//максимальное количество выражений в операторе вывода
-const int max_amount_podblocs = 20;	//максимальное количество вложенных подблоков первого уровня в один блок
+
+#define max_amount_podblocs 20      //максимальное количество вложенных подблоков первого уровня в один блок
 
 //ОБЩИЕ ОШИБКИ
 struct nodeError			        //узел стека, в котором хранятся ошибки
@@ -72,15 +73,17 @@ struct Table_Id		            //таблица Id
 	struct tokensFromScaner *token; //ссылка на таблицу с описанием исходного имени
 	unsigned short new_name;        //идентификатор нового имени
 	short kind;                     //тип идентификатора: 1 - int, 2 - float, 3 - char
-	Table_Id *next;
+	struct Table_Id *next;
 };
 
 struct Table_Identificators 	//таблица идентификаторов
 {
 	struct Table_Id *table;                 // ссылка на список идентификаторов блока
-	struct Table_Identificators  *child[max_amount_podblocs];   // В блоке <= 20 вложенных подблоков
-	struct Table_Identificators  *parent;   // Указатель на родительский блок
+	struct Table_Identificators *child[max_amount_podblocs];   // В блоке <= 20 вложенных подблоков
+	struct Table_Identificators *parent;   // Указатель на родительский блок
 	unsigned short level;                   // Уровень вложенности данного блока
+    unsigned short amount_id;               // Количество идентификаторов в данном блоке
+    unsigned short amount_blocks;           // Количество вложенных блоков в данном блоке
 };
 
 #endif // DATA_STRUCTURE_H_INCLUDED
