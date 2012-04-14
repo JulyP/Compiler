@@ -297,6 +297,48 @@ int PrintErrors()
         }
         case 3:
         {
+            while(p != NULL)
+            {
+                switch(p->numOfError)
+                {
+                    case 0:
+                    {
+                        printf(" ---=== *** НЕИЗВЕСТНАЯ ОШИБКА В ДЕРЕВЕ РАЗБОРА *** ===---\n");
+                        break;
+                    }
+                    case 1:
+                    {
+                        printf("Превышен максимальный уровень вложенности блоков, равный %d. Строка %d позиция %d\n", max_level_blocks, p->numOfString, p->position);
+                        break;
+                    }
+                    case 2:
+                    {
+                        printf("В одном блоке не может быть более %d вложенных блоков первого уровня. Строка %d позиция %d\n", max_amount_podblocs, p->numOfString, p->position);
+                        break;
+                    }
+					case 3:
+                    {
+                        printf("Повторное описание имени в блоке. Строка %d позиция %d\n", p->numOfString, p->position);
+                        break;
+                    }
+					case 4:
+                    {
+                        printf("Превышен лимит описания идентификаторов. максимальное количество имен в программе - %d. Строка %d позиция %d\n", max_amount_id, p->numOfString, p->position);
+                        break;
+                    }
+					case 5:
+                    {
+                        printf("Несовпадение типов. Строка %d позиция %d\n", p->numOfString, p->position);
+                        break;
+                    }
+					case 6:
+                    {
+                        printf("Отсутствует описание идентификатора в программе. Строка %d позиция %d\n", p->numOfString, p->position);
+                        break;
+                    }
+                }
+                p = p->next;
+            }
             break;
         }
     }

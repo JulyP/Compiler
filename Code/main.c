@@ -11,6 +11,8 @@
 
 int main()
 {
+    int a;
+	struct Table_Identificators *three_id = NULL;
     errorHead = NULL;
     //lex analizator
     Scanner();
@@ -30,7 +32,17 @@ int main()
         return 0;
     }
 
-    printTree(Root);
+    three_id = semantic_analizer(Root);
+	if (errorHead != NULL)
+    {
+        PrintErrors();
+        //return 0;
+    }
+
+    //printTree(Root);
+
+    printTable(three_id);
+	delete_Table_Identificators(&three_id);
     freeTree(&Root);
     return 0;
 }

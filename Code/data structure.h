@@ -82,8 +82,8 @@ struct Table_Identificators 	//таблица идентификаторов
 	struct Table_Identificators *child[max_amount_podblocs];   // В блоке <= 20 вложенных подблоков
 	struct Table_Identificators *parent;   // Указатель на родительский блок
 	unsigned short level;                   // Уровень вложенности данного блока
-    unsigned short amount_id;               // Количество идентификаторов в данном блоке
     unsigned short amount_blocks;           // Количество вложенных блоков в данном блоке
+	unsigned short string_number;			// Номер строки - начала блока (для указания строки ошибки)
 };
 
 #endif // DATA_STRUCTURE_H_INCLUDED

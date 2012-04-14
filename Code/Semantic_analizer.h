@@ -6,8 +6,30 @@
 unsigned short amount_id = 0;       //количество идентификаторов в программе
 unsigned short numb_next_id = 1;    //номер следующего нового идентификатора
 
-// создание нового блока
-struct Table_Identificators *Create_block(struct Table_Identificators *Block)
+// добавление элемента к списку ошибок
+void Add_semantic_error(int error_number, int string_nember, int position)
+{
+    struct nodeError *p1, *p = (struct nodeError*)malloc(sizeof(struct nodeError));
+    p -> numOfError = error_number;
+    p -> typeOfError = 3;
+    p -> numOfString = string_nember;
+    p -> position = position;
+    p -> next = NULL;
+
+    if (errorHead == NULL)
+        errorHead = p;
+    else
+    {
+        p1 = errorHead;
+        while (p1 -> next)
+            p1 = p1 -> next;
+        
+		p1 -> next = p;
+    }
+}
+
+// создание нового блока. возвращает указатель на созданный блок
+struct Table_Identificators *Create_block(struct Table_Identificators *Block, unsigned short string_number)
 {
     struct Table_Identificators *p = NULL;
     short i;
@@ -20,19 +42,26 @@ struct Table_Identificators *Create_block(struct Table_Identificators *Block)
     }
     else
     {
-        if (Block->level == max_level_blocks || Block->amount_blocks == max_amount_podblocs)
+        if (Block->level == max_level_blocks)
         {
-             // сгенерировать ошибку! -=TBD=-
-             return NULL;
+            Add_semantic_error(1, Block->string_number, 0);
+            return NULL;
+        }
+
+		if (Block->amount_blocks == max_amount_podblocs)
+        {
+            Add_semantic_error(2, Block->string_number, 0);
+            return NULL;
         }
 
         p = (struct Table_Identificators*) malloc(sizeof(struct Table_Identificators));
         p->level = Block->level + 1;
         p->parent = Block;
+		Block->child[Block->amount_blocks ++] = p;
     }
 
+	p->string_number = string_number;
     p->amount_blocks = 0;
-    p->amount_id = 0;
     p->table = NULL;
     for (i = 0; i <= max_amount_podblocs; i ++)
         p->child[i] = NULL;
@@ -40,49 +69,57 @@ struct Table_Identificators *Create_block(struct Table_Identificators *Block)
     return p;
 }
 
-// проверка что идентификатор описан в текущем, либо вышестоящих блоках
-short Check_id_descr(struct tokensFromScaner *id, struct Table_Identificators *Block);
-
 // проверка что идентификатор описан в текущем блоке.
-short Check_new_id_descr(struct tokensFromScaner *id, struct Table_Identificators *Block)
+short Check_new_id_descr(struct nodeName *id, struct Table_Identificators *Block)
 {
 	struct Table_Id *p = Block->table;
-	for (; p != NULL; p = p->next)
-		if (p->token == id)
+	for (; p; p = p->next)
+		if (p->token->pointerName == id)
 			return 1;
 	return 0;
 }
 
-// поиск идентификатора в данном блоке.??? или во всей структуре???
+// поиск идентификатора во всей структуре (текущем блоке и всех вышестоящих)
 // Если найден, вернется ссылка на него, если не найден – вернется NULL.
-struct Table_Id *Search_id(struct tokensFromScaner *id, struct Table_Identificators *Block);
+struct Table_Id *Search_id(struct tokensFromScaner *id, struct Table_Identificators *Block)
+{
+	struct Table_Id *p = NULL;
+	
+	if (!Block || !id)
+		return NULL;
+	
+	for (p = Block->table; p; p = p->next)
+		if (p->token->pointerName == id->pointerName)
+			return p;
+
+	return Search_id(id, Block->parent);
+}
 
 // добавляет идентификатор а таблицу, в указанный блок
 struct Table_Id *Add_Id(short kind, struct tokensFromScaner *id, struct Table_Identificators *Block)
 {
     struct Table_Id *p = NULL;
 
-    if (Check_new_id_descr(id, Block))
-        return NULL;
-
-    if (Block->amount_id == max_amount_id)
+    if (Check_new_id_descr(id->pointerName, Block))
     {
-        // что делать когда много идентификаторов?? надо ошибку генерить. добвлять или нет?
-        // -=TBD=-
-        return NULL;
+		Add_semantic_error(3, id->numString, id->position);
+		return NULL;
+	}
+
+    if (amount_id == max_amount_id)
+    {
+        Add_semantic_error(4, id->numString, id->position);
+		return NULL;
     }
 
     p = (struct Table_Id*) malloc(sizeof(struct Table_Id));
-    if (!p)
-        return NULL;
-
     p->token = id;
     p->kind = kind;
     p->next = Block->table;
     Block->table = p;
     p->new_name = numb_next_id;
     numb_next_id ++;
-    Block->amount_id ++;
+	amount_id ++;
 
     return p;
 }
@@ -108,49 +145,115 @@ void delete_Table_Identificators(struct Table_Identificators **table)
 
 /* функция производит анализ текущей вершины дерева
     возвращаемые значения - тип текущей вершины:
-    1 - int
-    2 - float
-    3 - char
-    0 - нет типа
+    8 - int
+    9 - float
+    10 - char
+    0 - ошибка, нет типа. ?на всякий случай?
     для оператора FuncOut: результат - уровень вложенности операторов
     для операторов CondExpr: результат:
     1 - булевский тип
-    0 - иное*/
+    0 - иное
+	для остальных вершин:
+	0 - все хорошо :)
+	666 - функция ещё не доделана, или неизвестная ошибка
+	13 - ошибка в синтаксическом дереве*/
 short Three_Analizer(struct nodeTree *root, struct Table_Identificators *table)
 {
-	int result_analisis, result1;	// в эту переменнтую сохраняем результат работы функции от потомков (тип вершины потомка)
+	int result1, result2, result3;	// в эту переменнтую сохраняем результат работы функции от потомков (тип вершины потомка)
 	struct Table_Identificators *block = NULL;
+	struct Table_Id *p = NULL;
 
-	switch (root->n.numToken)
+	switch (root->n.token)
 	{
+	case 3:	//id
+		// проверка что это id
+		return (root->n.numToken != 28)? 13 : 0;
+
+	case 5:	//type
+		// проверка что это тип
+		return (root->n.numToken < 8 || root->n.numToken > 10)? 13 : root->n.numToken;
+
 	case 24:	//Block
-		block = Create_block(table);
+		if (!root->alpha[0])
+			return 13;
+
+		// создаем новый блок + проверка на максимум блоков
+		block = Create_block(table, root->n.numString);
 		if (!block)
-            return 666;
+            return 0;
 
-		return Three_Analizer(root->alpha[0], &block);
+		return Three_Analizer(root->alpha[0], block);
+	
 	case 25:	//Sent
-		if (root->alpha[0] == NULL)
-			return 0;
-		Three_Analizer(root->alpha[0], table);
-		Three_Analizer(root->alpha[1], table);
-		return 0;
-		//break;
+		if (!root->alpha[0])
+			return 13;
+		
+		// идем дальше по дереву, проверок нет
+		result1 = Three_Analizer(root->alpha[0], table);
+		result2 = (!root->alpha[1])? 0: Three_Analizer(root->alpha[1], table);
+
+		return (result1)? result1 : result2;
+	
 	case 26:	//DescrVar
-		//*(root)->alpha[0]->numToken	// равен 8/9/10 - тип данных
-		//*(root)->alpha[1]->value	// ссылка на идентификатор в таблице констант/имен
-		result_analisis = Three_Analizer(root->alpha[2], table);
+		if (!root->alpha[0] || !root->alpha[1] || !root->alpha[2])
+			return 13;
 
-		// вставить проверку типов
+		// проверим что первый потомок - тип, второй - id
+		result1 = Three_Analizer(root->alpha[0], table);
+		result2 = Three_Analizer(root->alpha[1], table);
+		if (result1 == 13 || result2)
+			return 13;
 
-		break;
+		p = Add_Id(result1, &root->alpha[1]->n, table);
+		result3 = Three_Analizer(root->alpha[2], table);
+
+		// проверим что третий потомок имеет тип
+		if (result3 < 8 || result3 > 10)
+			return result3;
+		
+		// если id слишком много
+		if (!p)
+			return 0;
+
+		// запомнили в id его тип
+		root->alpha[1]->type = p;
+		// проверим совпадение типов id и третьего потомка
+		if (p->kind != result3 && !( p->kind == 9 && result3 == 8))
+			Add_semantic_error(5, p->token->numString, p->token->position);
+
+		return 0;
+		
 	case 27:	//OpEqu
-		//*(root)->alpha[0]->value	// ссылка на идентификатор в таблице констант/имен
-		result_analisis = Three_Analizer(root->alpha[1], table);
+		if (!root->alpha[0] || !root->alpha[1])
+			return 13;
 
-		// вставить проверку типов
+		// проверим что первый потомок - id
+		result1 = Three_Analizer(root->alpha[0], table);
+		if (result1)
+			return result1;
 
-		break;
+		// если id не нашли в дереве - ошибка
+		p = Search_id(&root->alpha[1]->n, table);
+		if (!p)
+			Add_semantic_error(6, root->alpha[1]->n.numString, root->alpha[1]->n.position);
+		
+		// проверим что второй потомок имеет тип
+		result2 = Three_Analizer(root->alpha[1], table);
+		if (result2 < 8 || result2 > 10)
+			return result2;
+
+		// проверим ещё раз. чтобы предыдущий код отработал
+		if (!p)
+			return 0;
+		
+		// запомнили в id его тип
+		root->alpha[0]->type = p;
+		// проверим совпадение типов id и второго потомка
+		if (p->kind != result2 && !( p->kind == 9 && result2 == 8))
+			Add_semantic_error(5, p->token->numString, p->token->position);
+
+		return 0;
+		/*
 	case 28:	//OpIn
 		return Three_Analizer(root->alpha[0], table);
 	case 29:	//OpOut
@@ -226,12 +329,14 @@ short Three_Analizer(struct nodeTree *root, struct Table_Identificators *table)
             return 1;
         else
             return 0;*/
-	case 42:
+	/*case 42:
 	case 43:
 	case 44:
-	case 45:
+	case 45:*/
+	case 50:	// L - конец программы
+		return 0;
 	default:
-        return 777;
+        return 666;
 	}
 
 	return 0;
@@ -240,27 +345,53 @@ short Three_Analizer(struct nodeTree *root, struct Table_Identificators *table)
 // Функция производит анализ дерева разбора
 struct Table_Identificators *semantic_analizer(struct nodeTree *root)
 {
-	struct Table_Identificators *table = Create_block(NULL);
-
+	struct Table_Identificators *table = Create_block(NULL, root->alpha[0]->n.numString);
 	// инициализируем таблицу идентификаторов и пропускаем 2 вершины синтаксического дерева
-	Three_Analizer(root->alpha[0]->alpha[0], table);
+	short code = Three_Analizer(root->alpha[0]->alpha[0], table);
+
+	if (code == 13)
+		Add_semantic_error(0, 0, 0);
+	
+	printf("\n -----====== ******* semantic analizer ******* ======-----\n");
+	printf(" code = %d", code);
+	printf("\n -----====== ******* semantic analizer ******* ======-----\n");
+
+	return table;
 }
 
 void printTable(struct Table_Identificators *table)
 {
     struct Table_Id *p = NULL;
     int i;
+	char *type;
+
+    if (!table)
+        return;
 
     printf("\n---------------------------------\n");
-    printf("level = %d\n", table->level);
-    printf("amount id = %d\n", table->amount_id);
+    printf("string = %d\n", table->string_number);
+	printf("level = %d\n", table->level);
     printf("amount blocks = %d\n", table->amount_blocks);
 
     p = table->table;
     while (p)
     {
         if (p->token->pointerName)
-            printf(" -> id = %s\n", p->token->pointerName->name);
+        {
+			switch (p->kind)
+			{
+			case 8:
+				type = "int\0";
+				break;
+			case 9:
+				type = "float\0";
+				break;
+			case 10:
+				type = "string\0";
+				break;
+			}
+			printf(" -> id = %s  %s\n", type, p->token->pointerName->name);
+		}
         else
             printf(" -> error\n");
         p = p->next;
