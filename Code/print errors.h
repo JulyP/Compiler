@@ -33,10 +33,11 @@ int freeTree(struct nodeTree **pp)
 
 int printTree(struct nodeTree *pp)
 {
-    if (pp != NULL)
+    struct nodeTree *p0, *p1, *p2, *p3;
+	if (pp != NULL)
     {
         printf("\nt: %d\t%d ", pp->n.token, pp->n.numToken);
-        struct nodeTree *p0, *p1, *p2, *p3;
+        
         p0 = pp -> alpha[0];
         p1 = pp -> alpha[1];
         p2 = pp -> alpha[2];
@@ -63,8 +64,9 @@ int printTree(struct nodeTree *pp)
 
 int PrintErrors()
 {
-    printf("\n\nОшибки:\n");
     struct nodeError *p = errorHead;
+	printf("\n\nОшибки:\n");
+    
     switch(p->typeOfError)
     {
         case 1: //lex mistakes
@@ -303,7 +305,7 @@ int PrintErrors()
                 {
                     case 0:
                     {
-                        printf(" ---=== *** НЕИЗВЕСТНАЯ ОШИБКА В ДЕРЕВЕ РАЗБОРА *** ===---\n");
+                        printf(" ---=== *** ОШИБКА В ДЕРЕВЕ РАЗБОРА *** ===---\n");
                         break;
                     }
                     case 1:
@@ -313,7 +315,7 @@ int PrintErrors()
                     }
                     case 2:
                     {
-                        printf("В одном блоке не может быть более %d вложенных блоков первого уровня. Строка %d позиция %d\n", max_amount_podblocs, p->numOfString, p->position);
+                        printf("В одном блоке не может быть более max_amount_podblocs вложенных блоков первого уровня. Строка %d позиция %d\n", p->numOfString, p->position);
                         break;
                     }
 					case 3:
@@ -334,6 +336,21 @@ int PrintErrors()
 					case 6:
                     {
                         printf("Отсутствует описание идентификатора в программе. Строка %d позиция %d\n", p->numOfString, p->position);
+                        break;
+                    }
+					case 7:
+                    {
+                        printf("Превышен лимит выводимых выражений оператором вывода. предел - %d. Строка %d позиция %d\n", max_amount_print, p->numOfString, p->position);
+                        break;
+                    }
+					case 8:
+                    {
+                        printf("Ошибка в арифметическом выражении. Строка %d позиция %d\n", p->numOfString, p->position);
+                        break;
+                    }
+					case 9:
+                    {
+                        printf("Данное выражение не является булевым. Строка %d позиция %d\n", p->numOfString, p->position);
                         break;
                     }
                 }
