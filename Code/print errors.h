@@ -37,7 +37,7 @@ int printTree(struct nodeTree *pp)
 	if (pp != NULL)
     {
         printf("\nt: %d\t%d ", pp->n.token, pp->n.numToken);
-        
+
         p0 = pp -> alpha[0];
         p1 = pp -> alpha[1];
         p2 = pp -> alpha[2];
@@ -66,7 +66,7 @@ int PrintErrors()
 {
     struct nodeError *p = errorHead;
 	printf("\n\nќшибки:\n");
-    
+
     switch(p->typeOfError)
     {
         case 1: //lex mistakes
@@ -173,7 +173,7 @@ int PrintErrors()
                     }
                     case 11:
                     {
-                        printf("ќжидаетс€ '*', '//' или ')'.");
+                        printf("ќжидаетс€ '*', '/' или ')'.");
                         break;
                     }
                     case 12:
@@ -283,7 +283,7 @@ int PrintErrors()
                     }
                     case 33:
                     {
-                        printf("ќжидаетс€ '*' или '//'.");
+                        printf("ќжидаетс€ '*' или '/'.");
                         break;
                     }
                     case 34:
@@ -359,6 +359,7 @@ int PrintErrors()
             break;
         }
     }
+    return 0;
 }
 
 #endif // PRINT_ERRORS_H_INCLUDED

@@ -229,6 +229,7 @@ int Table()
 	Tab[39][7] = 130;
 	Tab[39][14] = 129;
 	//40
+	Tab[40][4] = 128;
 	Tab[40][15] = 128;
 	Tab[40][19] = 127;
 	Tab[40][23] = 128;
@@ -864,10 +865,9 @@ int TableOfTokensToSeqOfRules (int i)
                     DelNodeFromStack(&HeadOfStack);		    //удаляем из стека вершину OpFor
                     AddNodeToStack(&HeadOfStack, 24);		//добавляем в стек вершину Block
                     AddNodeToStack(&HeadOfStack, 15);		//добавляем в стек вершину )
-                    AddNodeToStack(&HeadOfStack, 35);		//добавляем в стек вершину ArExpr
+                    AddNodeToStack(&HeadOfStack, 27);		//добавляем в стек вершину OpEqu
                     AddNodeToStack(&HeadOfStack, 4);		//добавляем в стек вершину ;
                     AddNodeToStack(&HeadOfStack, 37);		//добавляем в стек вершину CondExpr
-                    AddNodeToStack(&HeadOfStack, 4);		//добавляем в стек вершину ;
                     AddNodeToStack(&HeadOfStack, 27);		//добавляем в стек вершину OpEqu
                     AddNodeToStack(&HeadOfStack, 14);		//добавляем в стек вершину (
                     AddNodeToStack(&HeadOfStack, 17);		//добавляем в стек вершину for
@@ -1111,7 +1111,7 @@ int BuildingOfTree (struct nodeTree **p, struct nodeToStack *p1)
 			newP = addNodeToTree(&(*p),p1,25,1);            //add Sent
 			fromHead = DelNumFromSeqOfRule(&HeadSeqOfRule); //next rule
 			BuildingOfTree (&newP,fromHead);                //build tree from Sent
-			break;OfTree (&newP,fromHead);
+
 			break;
 		}
         case 105:
