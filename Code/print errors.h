@@ -65,7 +65,11 @@ int printTree(struct nodeTree *pp)
 int PrintErrors()
 {
     struct nodeError *p = errorHead;
-	printf("\n\nОшибки:\n");
+    FILE *f;
+    f = fopen("errors.txt", "w");
+    char *str = (char*)malloc(sizeof(char)*87);
+
+	printf("\n\nThere are errors in errors.txt.\n");
 
     switch(p->typeOfError)
     {
@@ -77,40 +81,52 @@ int PrintErrors()
                 {
                     case 0:
                     {
-                        printf("Максимальная длина идентификатора больше 50 символов. Строка %d позиция %d\n", p->numOfString, p->position);
+                        str = "Максимальная длина идентификатора больше 50 символов.";
                         break;
                     }
                     case 1:
                     {
-                        printf("Максимальная длина числа больше 9 символов. Строка %d позиция %d\n",p->numOfString, p->position);
+                        str = "Максимальная длина числа больше 9 символов.";
                         break;
                     }
                     case 2:
                     {
-                        printf("Пропуск символов закрывающих комментарий */. Строка %d позиция %d\n",p->numOfString, p->position);
+                        str = "Пропуск символов закрывающих комментарий */.";
                         break;
                     }
                     case 3:
                     {
-                        printf("Максимальная длина буфера больше 256 символов\n");
+                        str = "Максимальная длина буфера больше 256 символов.";
                         break;
                     }
                     case 4:
                     {
-                        printf("Неизвестный символ. Строка %d позиция %d\n",p->numOfString, p->position);
+                        str = "Неизвестный символ.";
                         break;
                     }
                     case 5:
                     {
-                        printf("Неправильная запись числа, после точки не цифра. Строка %d позиция %d\n",p->numOfString, p->position);
+                        str = "Неправильная запись числа, после точки не цифра.";
                         break;
                     }
                     case 6:
                     {
-                        printf("Пропуск символа закрывающей кавычки. Строка %d позиция %d\n",p->numOfString, p->position);
+                        str = "Пропуск символа закрывающей кавычки.";
                         break;
                     }
                 }
+                fprintf(f, "%s", str);
+                if (p->numOfError != 3)
+                {
+                    str = " Строка ";
+                    fprintf(f, "%s", str);
+                    fprintf(f, "%d", p->numOfString);
+                    str = " позиция ";
+                    fprintf(f, "%s", str);
+                    fprintf(f, "%d.", p->position);
+                }
+                str = "\n";
+                fprintf(f, "%s", str);
                 p = p->next;
             }
             break;
@@ -123,176 +139,182 @@ int PrintErrors()
                 {
                     case 1:
                     {
-                        printf("Ожидается 'type'.");
+                        str = "Ожидается 'type'.";
                         break;
                     }
                     case 2:
                     {
-                        printf("Ожидается идентификатор.");
+                        str = "Ожидается идентификатор.";
                         break;
                     }
                     case 3:
                     {
-                        printf("Ожидается 'else', 'type', идентификатор, 'cin', 'cout', 'if', 'for', 'while' или '}'.");
+                        str = "Ожидается 'else', 'type', идентификатор, 'cin', 'cout', 'if', 'for', 'while' или '}'.";
                         break;
                     }
                     case 4:
                     {
-                        printf("Ожидается '&&', '||' или ')'.");
+                        str = "Ожидается '&&', '||' или ')'.";
                         break;
                     }
                     case 5:
                     {
-                        printf("Ожидается '{'.");
+                        str = "Ожидается '{'.";
                         break;
                     }
                     case 6:
                     {
-                        printf("Ожидается идентификатор или число.");
+                        str = "Ожидается идентификатор или число.";
                         break;
                     }
                     case 7:
                     {
-                        printf("Ожидается '+', '-' или ')'.");
+                        str = "Ожидается '+', '-' или ')'.";
                         break;
                     }
                     case 8:
                     {
-                        printf("Ожидается 'cout'.");
+                        str = "Ожидается 'cout'.";
                         break;
                     }
                     case 9:
                     {
-                        printf("Ожидается '<<' или ';'.");
+                        str = "Ожидается '<<' или ';'.";
                         break;
                     }
                     case 10:
                     {
-                        printf("Ожидается 'cin'.");
+                        str = "Ожидается 'cin'.";
                         break;
                     }
                     case 11:
                     {
-                        printf("Ожидается '*', '/' или ')'.");
+                        str = "Ожидается '*', '/' или ')'.";
                         break;
                     }
                     case 12:
                     {
-                        printf("Ожидается '}'.");
+                        str = "Ожидается '}'.";
                         break;
                     }
                     case 13:
                     {
-                        printf("Ожидается ';'.");
+                        str = "Ожидается ';'.";
                         break;
                     }
                     case 14:
                     {
-                        printf("Ожидается число, идентификатор или '('.");
+                        str = "Ожидается число, идентификатор или '('.";
                         break;
                     }
                     case 15:
                     {
-                        printf("Ожидается 'if'.");
+                        str = "Ожидается 'if'.";
                         break;
                     }
                     case 16:
                     {
-                        printf("Ожидается строковая константа.");
+                        str = "Ожидается строковая константа.";
                         break;
                     }
                     case 17:
                     {
-                        printf("Ожидается 'for'.");
+                        str = "Ожидается 'for'.";
                         break;
                     }
                     case 18:
                     {
-                        printf("Ожидается 'while'.");
+                        str = "Ожидается 'while'.";
                         break;
                     }
                     case 19:
                     {
-                        printf("Ожидается 'main'.");
+                        str = "Ожидается 'main'.";
                         break;
                     }
                     case 20:
                     {
-                        printf("Ожидается 'type', идентификатор, 'cin', 'cout', 'if', 'for', 'while' или '}'.");
+                        str = "Ожидается 'type', идентификатор, 'cin', 'cout', 'if', 'for', 'while' или '}'.";
                         break;
                     }
                     case 21:
                     {
-                        printf("Ожидается '=' или ';'.");
+                        str = "Ожидается '=' или ';'.";
                         break;
                     }
                     case 22:
                     {
-                        printf("Ожидается константа, идентификатор или '('.");
+                        str = "Ожидается константа, идентификатор или '('.";
                         break;
                     }
                     case 23:
                     {
-                        printf("Ожидается число.");
+                        str = "Ожидается число.";
                         break;
                     }
                     case 24:
                     {
-                        printf("Ожидается '='.");
+                        str = "Ожидается '='.";
                         break;
                     }
                     case 25:
                     {
-                        printf("Ожидается '>>'.");
+                        str = "Ожидается '>>'.";
                         break;
                     }
                     case 26:
                     {
-                        printf("Ожидается '<<'.");
+                        str = "Ожидается '<<'.";
                         break;
                     }
                     case 27:
                     {
-                        printf("Ожидается '('.");
+                        str = "Ожидается '('.";
                         break;
                     }
                     case 28:
                     {
-                        printf("Ожидается ')'.");
+                        str = "Ожидается ')'.";
                         break;
                     }
                     case 29:
                     {
-                        printf("Ожидается 'else'.");
+                        str = "Ожидается 'else'.";
                         break;
                     }
                     case 30:
                     {
-                        printf("Ожидается '&&' или '||'.");
+                        str = "Ожидается '&&' или '||'.";
                         break;
                     }
                     case 31:
                     {
-                        printf("Ожидается '==', '<=', '>=', '!=', '>' или '<'.");
+                        str = "Ожидается '==', '<=', '>=', '!=', '>' или '<'.";
                         break;
                     }
                     case 32:
                     {
-                        printf("Ожидается '+' или '-'.");
+                        str = "Ожидается '+' или '-'.";
                         break;
                     }
                     case 33:
                     {
-                        printf("Ожидается '*' или '/'.");
+                        str = "Ожидается '*' или '/'.";
                         break;
                     }
                     case 34:
                     {
-                        printf("Ожидается конец файла.");
+                        str = "Ожидается конец файла.";
                         break;
                     }
                 }
-                printf(" Строка %d позиция %d\n", p->numOfString, p->position);
+                fprintf(f, "%s", str);
+                str = " Строка ";
+                fprintf(f, "%s", str);
+                fprintf(f, "%d", p->numOfString);
+                str = " позиция ";
+                fprintf(f, "%s", str);
+                fprintf(f, "%d.\n", p->position);
                 p = p->next;
             }
             break;
@@ -305,60 +327,92 @@ int PrintErrors()
                 {
                     case 0:
                     {
-                        printf(" ---=== *** ОШИБКА В ДЕРЕВЕ РАЗБОРА *** ===---\n");
+                        str = " ---=== *** ОШИБКА В ДЕРЕВЕ РАЗБОРА *** ===---";
                         break;
                     }
                     case 1:
                     {
-                        printf("Превышен максимальный уровень вложенности блоков, равный %d. Строка %d позиция %d\n", max_level_blocks, p->numOfString, p->position);
+                        str = "Превышен максимальный уровень вложенности блоков, равный ";
                         break;
                     }
                     case 2:
                     {
-                        printf("В одном блоке не может быть более max_amount_podblocs вложенных блоков первого уровня. Строка %d позиция %d\n", p->numOfString, p->position);
+                        str = "В одном блоке не может быть более max_amount_podblocs вложенных блоков первого уровня.";
                         break;
                     }
 					case 3:
                     {
-                        printf("Повторное описание имени в блоке. Строка %d позиция %d\n", p->numOfString, p->position);
+                        str = "Повторное описание имени в блоке.";
                         break;
                     }
 					case 4:
                     {
-                        printf("Превышен лимит описания идентификаторов. максимальное количество имен в программе - %d. Строка %d позиция %d\n", max_amount_id, p->numOfString, p->position);
+                        str = "Превышен лимит описания идентификаторов. максимальное количество имен в программе - ";
                         break;
                     }
 					case 5:
                     {
-                        printf("Несовпадение типов. Строка %d позиция %d\n", p->numOfString, p->position);
+                        str = "Несовпадение типов.";
                         break;
                     }
 					case 6:
                     {
-                        printf("Отсутствует описание идентификатора в программе. Строка %d позиция %d\n", p->numOfString, p->position);
+                        str = "Отсутствует описание идентификатора в программе.";
                         break;
                     }
 					case 7:
                     {
-                        printf("Превышен лимит выводимых выражений оператором вывода. предел - %d. Строка %d позиция %d\n", max_amount_print, p->numOfString, p->position);
+                        str = "Превышен лимит выводимых выражений оператором вывода. предел - ";
                         break;
                     }
 					case 8:
                     {
-                        printf("Ошибка в арифметическом выражении. Строка %d позиция %d\n", p->numOfString, p->position);
+                        str = "Ошибка в арифметическом выражении.";
                         break;
                     }
 					case 9:
                     {
-                        printf("Данное выражение не является булевым. Строка %d позиция %d\n", p->numOfString, p->position);
+                        str = "Данное выражение не является булевым.";
                         break;
                     }
                 }
+                fprintf(f, "%s", str);
+                if(p->numOfError != 0)
+                {
+                    if (p->numOfError == 1)
+                    {
+                        fprintf(f, "%d.", max_level_blocks);
+                    }
+                    else
+                    {
+                        if (p->numOfError == 4)
+                        {
+                            fprintf(f, "%d.", max_amount_id);
+                        }
+                        else
+                        {
+                            if (p->numOfError == 7)
+                            {
+                                fprintf(f, "%d.", max_amount_print);
+                            }
+                        }
+                    }
+                    str = " Строка ";
+                    fprintf(f, "%s", str);
+                    fprintf(f, "%d", p->numOfString);
+                    str = " позиция ";
+                    fprintf(f, "%s", str);
+                    fprintf(f, "%d.", p->position);
+                }
+                str = "\n";
+                fprintf(f, "%s", str);
                 p = p->next;
             }
             break;
         }
     }
+    fclose(f);
+
     return 0;
 }
 

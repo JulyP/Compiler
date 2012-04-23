@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+//#include <stdafx.h>
 #include "data structure.h"
 #include "print errors.h"
 #include "TableName.h"
@@ -32,7 +33,7 @@ int main()
         return 0;
     }
 
-    printTree(Root);
+    //printTree(Root);
 
     //semant analixator
     three_id = semantic_analizer(Root);
