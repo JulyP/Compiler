@@ -32,6 +32,9 @@ int main()
         return 0;
     }
 
+    printTree(Root);
+
+    //semant analixator
     three_id = semantic_analizer(Root);
 	if (errorHead != NULL)
     {
