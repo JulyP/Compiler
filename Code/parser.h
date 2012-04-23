@@ -1217,7 +1217,7 @@ int BuildingOfTree (struct nodeTree **p, struct nodeToStack *p1)
 		}
         case 117:
 		{
-			addNodeToTree(&(*p),p1,3,0);                   //add id
+			addNodeToTree(&(*p),returnToken(1+p1->n.numLex),3,0);                   //add id
 			break;
 		}
         case 118:
