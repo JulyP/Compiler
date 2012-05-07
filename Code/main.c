@@ -16,11 +16,13 @@ int main()
 	struct Table_Identificators *three_id = NULL;
     errorHead = NULL;
     //lex analizator
-    Scanner();
+    char input_f[9] = "input.txt";
+    char output_f[10] = "output.txt";
+    Scanner(input_f);
 
     if (errorHead != NULL)
     {
-        PrintErrors();
+        PrintErrors(output_f);
         return 0;
     }
 
@@ -29,17 +31,20 @@ int main()
 
     if (errorHead != NULL)
     {
-        PrintErrors();
+        PrintErrors(output_f);
         return 0;
     }
 
-    //printTree(Root);
+    FILE *f;
+    f = fopen("tree.txt", "w");
+    printTree(Root,f);
+    fclose(f);
 
     //semant analixator
     three_id = semantic_analizer(Root);
 	if (errorHead != NULL)
     {
-        PrintErrors();
+        PrintErrors(output_f);
         //return 0;
     }
 

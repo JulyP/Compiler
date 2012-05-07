@@ -694,7 +694,7 @@ int nexttoken()
 }
 }
 
-void Scanner(){
+void Scanner(char input_f[]){
 	//structsetlocale(LC_ALL, "Russian");
 	FILE*f;
 	char q;
@@ -702,7 +702,7 @@ void Scanner(){
 	struct tokensFromScaner  tokens;
 	buf = (char*)calloc(max_length_buf + 1, sizeof(char));
    	InsertKeyWords(&nameHead);
-	f = fopen("input.txt","rt");
+	f = fopen(input_f,"rt");
 	for (i = 0; i <= max_length_buf + 1; i++)
 		buf[i]='\0';
     while (!(feof(f)))

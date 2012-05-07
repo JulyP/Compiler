@@ -133,7 +133,7 @@ int Table()
 		Tab[9][i] = -10;
 		Tab[10][i] = -25;
 		Tab[11][i] = -8;
-		Tab[12][i] = -25;
+		Tab[12][i] = -26;
 		Tab[13][i] = -15;
 		Tab[14][i] = -27;
 		Tab[15][i] = -28;
@@ -543,7 +543,7 @@ int Error (int i)
 	        {
 	            if (j==5 || j==3 || j==9 || j==11 || j==13 || j==17 || j==18 || j==2)
 	            {
-	                AddNodeToHead(4,&Head);     //tiken ';' was added to Head
+	                AddNodeToHead(4,&Head);     //token ';' was added to Head
 	            }
 	            else
 	            {
@@ -576,12 +576,23 @@ int Error (int i)
         }
 	    case -25:   //'>>' is expected
 	    {
-	        AddNodeToHead(10,&Head);         //'>>' is added
+	        int j = NumFromStack();
+	        if (j == 12) //<<
+	        {
+                DelToken(&Head);
+                //printf ("\n\n%d", j);
+	        }
+            AddNodeToHead(10,&Head);         //'<<' is added
 	        break;
 	    }
 	    case -26:   //'<<' is expected
 	    {
-	        AddNodeToHead(12,&Head);         //'<<' is added
+	        int j = NumFromStack();
+	        if (j == 10) //>>
+	        {
+                DelToken(&Head);
+	        }
+            AddNodeToHead(12,&Head);         //'<<' is added
 	        break;
         }
 	    case -27:   //'(' is expected

@@ -31,42 +31,44 @@ int freeTree(struct nodeTree **pp)
     return 0;
 }
 
-int printTree(struct nodeTree *pp)
+int printTree(struct nodeTree *pp, FILE *f)
 {
     struct nodeTree *p0, *p1, *p2, *p3;
 	if (pp != NULL)
     {
-        printf("\nt: %d\t%d ", pp->n.token, pp->n.numToken);
-
+        fprintf(f, "%s", "Токен (0-22): ");
+        fprintf(f, "%d", pp->n.token);
+        fprintf(f, "\t (1-39): %s", "");
+        fprintf(f, "%d\n", pp->n.numToken);
         p0 = pp -> alpha[0];
         p1 = pp -> alpha[1];
         p2 = pp -> alpha[2];
         p3 = pp -> alpha[3];
         if (p0 != NULL)
         {
-            printTree(p0);
+            printTree(p0,f);
         }
         if (p1 != NULL)
         {
-            printTree(p1);
+            printTree(p1,f);
         }
         if (p2 != NULL)
         {
-            printTree(p2);
+            printTree(p2,f);
         }
         if (p3 != NULL)
         {
-            printTree(p3);
+            printTree(p3,f);
         }
     }
     return 0;
 }
 
-int PrintErrors()
+int PrintErrors(char output_f[])
 {
     struct nodeError *p = errorHead;
     FILE *f;
-    f = fopen("errors.txt", "w");
+    f = fopen(output_f, "w");
     char *str = (char*)malloc(sizeof(char)*87);
 
 	printf("\n\nThere are errors in errors.txt.\n");

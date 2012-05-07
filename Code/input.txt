@@ -19,7 +19,7 @@ main
  }
  else
  {
-  for (i = 0 ; r < g ; i = k + 8;)
+  for (i = 0 ; ((r < g) && (2 > 7)) ; i = k + 8;)
   {
    t = 0;
   }

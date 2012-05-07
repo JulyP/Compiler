@@ -1,0 +1,29 @@
+main
+{
+ int a = 0;
+ int b = 0;
+ float sum = 0.0;
+ cin >> a;
+ cin >> b;
+ sum = a + b;
+ res = "result";
+ cout << res;
+ if (i > 8)
+ {
+  int g = 9;
+  g = 8 + 9;
+  cout << 8;
+  while (t == 1
+  {
+    t = 2*t;
+  }
+ }
+ else
+ {
+  for (i = 0 ; ((r < g) && (2 > 7)) ; i = k + 8;)
+  {
+   t = 0;
+  }
+ }
+ n = 13 + 8;
+}
